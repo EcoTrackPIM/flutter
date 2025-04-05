@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../Components/Toolbar.dart';
+import './ScanOptionsScreen.dart'; // Import the screen for navigation
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -25,78 +27,102 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
+      body: SingleChildScrollView(
+        child: Column(
           children: [
-            const Text(
-              "WHO ARE WE",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+            // Rest of the body content
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  const Text(
+                    "WHO ARE WE",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  buildFeatureCard(
+                    "assets/transport.png",
+                    "Track your transport emissions",
+                    context,
+                  ),
+                  const SizedBox(height: 20),
+                  buildFeatureCard(
+                    "assets/Hanger_icon.png",
+                    "Outfits Time", // Navigation added for this card
+                    context,
+                  ),
+                  const SizedBox(height: 20),
+                  buildFeatureCard(
+                    "assets/food.png",
+                    "Analyze your food's carbon footprint",
+                    context,
+                  ),
+                  const SizedBox(height: 20),
+                  buildFeatureCard(
+                    "assets/energy.png",
+                    "Energy Consumption Tracking",
+                    context,
+                  ),
+                  const SizedBox(height: 30), // Space before phone image
+
+                  // New Image Placeholder for "phone.png"
+                  Center(
+                    child: Container(
+                      width: 200,
+                      height: 300,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.white, // Placeholder color
+                      ),
+                      child: Image.asset("assets/phone.png", fit: BoxFit.contain),
+                    ),
+                  ),
+                  const SizedBox(height: 40), // Space before numbered sections
+
+                  // Section 1
+                  buildNumberedSection(
+                    "assets/number1.png",
+                    "Track your transport emissions :",
+                    "Compares travel emissions in real-time, suggesting greener options like carpooling or biking.",
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Section 2
+                  buildNumberedSection(
+                    "assets/number2.png",
+                    "Analyze your food's carbon footprint Subheading :",
+                    "Predicts food carbon footprints and recommends sustainable alternatives.",
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Section 3
+                  buildNumberedSection(
+                    "assets/number3.png",
+                    "Energy Consumption Tracking:",
+                    "Monitors energy use via smart devices, offering savings tips.",
+                  ),
+                  const SizedBox(height: 20), // Final spacing
+                ],
               ),
             ),
-            const SizedBox(height: 20),
-
-            buildFeatureCard(
-              "assets/transport.png",
-              "Track your transport emissions",
-              context,
-            ),
-            const SizedBox(height: 20),
-            buildFeatureCard(
-              "assets/food.png",
-              "Analyze your food's carbon footprint",
-              context,
-            ),
-            const SizedBox(height: 20),
-            buildFeatureCard(
-              "assets/energy.png",
-              "Energy Consumption Tracking",
-              context,
-            ),
-            const SizedBox(height: 30), // Space before phone image
-
-            // New Image Placeholder for "phone.png"
-            Center(
-              child: Container(
-                width: 200,
-                height: 300,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.white, // Placeholder color
-                ),
-                child: Image.asset("assets/phone.png", fit: BoxFit.contain),
-              ),
-            ),
-            const SizedBox(height: 40), // Space before numbered sections
-
-            // Section 1
-            buildNumberedSection(
-              "assets/number1.png",
-              "Track your transport emissions :",
-              "Compares travel emissions in real-time, suggesting greener options like carpooling or biking.",
-            ),
-            const SizedBox(height: 30),
-
-            // Section 2
-            buildNumberedSection(
-              "assets/number2.png",
-              "Analyze your food's carbon footprint Subheading :",
-              "Predicts food carbon footprints and recommends sustainable alternatives.",
-            ),
-            const SizedBox(height: 30),
-
-            // Section 3
-            buildNumberedSection(
-              "assets/number3.png",
-              "Energy Consumption Tracking:",
-              "Monitors energy use via smart devices, offering savings tips.",
-            ),
-            const SizedBox(height: 20), // Final spacing
           ],
         ),
+      ),
+      bottomNavigationBar: CustomToolbar(
+        onProfilePressed: () {
+          // Navigate to Profile Screen
+          print("Profile pressed");
+        },
+        onSettingsPressed: () {
+          // Navigate to Settings Screen
+          print("Settings pressed");
+        },
       ),
     );
   }
@@ -137,7 +163,13 @@ class HomeScreen extends StatelessWidget {
             height: 40,
             child: ElevatedButton(
               onPressed: () {
-                // Add navigation or functionality here
+                if (text == "Outfits Time") {
+                  // Navigate to EcoFriendlyFashionScanScreen when "Outfits Time" is clicked
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ScanOptionsScreen()),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,

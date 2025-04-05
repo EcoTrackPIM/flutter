@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:pimflutter/Screens/EcoFriendlyFashionScan.dart';
 import 'Screens/welcomeScreen.dart';
+import 'Screens/HomeScreen.dart';
+import 'dart:io'; // Add this
+import 'package:image_picker/image_picker.dart';
+
+
+
 void main() {
   runApp(const MyApp());
 }
@@ -31,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:  WelcomeScreen(),
+      home:  HomeScreen(),
     );
   }
 }
