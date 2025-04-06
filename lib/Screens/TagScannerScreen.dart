@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'dart:convert';
 import '../Api/tagscanner.dart';
 
 class TagScannerScreen extends StatefulWidget {
@@ -30,10 +29,15 @@ class _TagScannerScreenState extends State<TagScannerScreen> {
       try {
         final response = await tagApi.scanTag(_selectedImage!);
 
-        // Check for success in the response body rather than status code
+        // Updated response handling to match your backend structure
         if (response['success'] == true) {
           setState(() {
-            _results = response['data']['data']; // Access nested data structure
+            _results = {
+              'original_text': response['data']['original_text'],
+              'brands': response['data']['matched_brands'],
+              'percentages': response['data']['percentages'],
+              'all_text': response['data']['all_text'],
+            };
             _isLoading = false;
           });
         } else {
@@ -258,6 +262,15 @@ class _TagScannerScreenState extends State<TagScannerScreen> {
                     ),
                   ),
                   SizedBox(height: 16),
+                  _buildResultItem('Extracted Text:', Icons.text_fields),
+                  SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 32.0, bottom: 16),
+                    child: Text(
+                      _results!['original_text'] ?? 'No text extracted',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
                   if (_results!['brands'] != null && (_results!['brands'] as List).isNotEmpty) ...[
                     _buildResultItem('Matched Brands:', Icons.sell),
                     SizedBox(height: 8),
@@ -290,7 +303,7 @@ class _TagScannerScreenState extends State<TagScannerScreen> {
                                   fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              '${entry.value}%',
+                              '${entry.value.toStringAsFixed(2)}%',
                               style: TextStyle(fontSize: 16),
                             ),
                           ],
@@ -299,6 +312,16 @@ class _TagScannerScreenState extends State<TagScannerScreen> {
                           .toList(),
                     ),
                   ],
+                  SizedBox(height: 16),
+                  _buildResultItem('Full Analysis:', Icons.analytics),
+                  SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 32.0),
+                    child: Text(
+                      _results!['all_text'] ?? 'No detailed analysis available',
+                      style: TextStyle(fontSize: 14, color: Colors.black54),
+                    ),
+                  ),
                 ],
               ),
             ),

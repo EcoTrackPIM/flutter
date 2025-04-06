@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  final String baseUrl = "http://192.168.211.213:3000"; // Ensure this is the correct backend URL
+  final String baseUrl = "http://192.168.100.17:3000"; // Ensure this is the correct backend URL
   final storage = FlutterSecureStorage();
 
   Future<Map<String, dynamic>> registerUser({

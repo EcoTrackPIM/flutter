@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import 'CameraOptionsScreen.dart';
 
 const String BEARER_TOKEN = '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';
-const String SERVER_URL = 'http://192.168.211.213:3000/upload';
+const String SERVER_URL = 'http://192.168.100.17:3000/upload';
 
 class EcoFriendlyFashionScanScreen extends StatefulWidget {
   @override
@@ -32,7 +33,7 @@ class _EcoFriendlyFashionScanScreenState
     _dio.options.connectTimeout = const Duration(seconds: 30);
     _dio.options.receiveTimeout = const Duration(seconds: 30);
     _dio.options.headers = {
-      'Authorization': 'Bearer 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',
+      'Authorization': 'Bearer $BEARER_TOKEN',
       'Accept': 'application/json',
     };
   }
@@ -94,17 +95,20 @@ class _EcoFriendlyFashionScanScreenState
 
   Future<void> _uploadAndDetectFabric(XFile image) async {
     try {
+      List<int> imageBytes = await image.readAsBytes();
+
       FormData formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(
-          image.path,
+        'image': MultipartFile.fromBytes(
+          imageBytes,
           filename: 'fabric_${DateTime.now().millisecondsSinceEpoch}.jpg',
+          contentType: MediaType('image', 'jpeg'),
         ),
       });
 
       print('Attempting to upload to: $SERVER_URL');
 
       final response = await _dio.post(
-        '/upload',
+        SERVER_URL,
         data: formData,
         onSendProgress: (sent, total) {
           print('Upload progress: ${(sent / total * 100).toStringAsFixed(0)}%');
@@ -114,13 +118,17 @@ class _EcoFriendlyFashionScanScreenState
       print('Response received: ${response.statusCode}');
       print('Response data: ${response.data}');
 
-      if (response.statusCode == 200 && response.data['fabric'] != null) {
+      if ([200, 201].contains(response.statusCode)) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => CameraOptionsScreen(
-              fabric: response.data['fabric'],
+              fabric: response.data['fabric'] ?? 'Unknown',
               imagePath: image.path,
+              compositionData: response.data['composition'] ?? {},
+              brandData: response.data['brand'] ?? 'Unknown',
+              carbonFootprint: response.data['carbonFootprint'] ?? 0,
+              message: response.data['message'] ?? '',
             ),
           ),
         );
@@ -149,6 +157,17 @@ class _EcoFriendlyFashionScanScreenState
   }
 
   String _getErrorMessage(DioError e) {
+    if (e.response != null) {
+      if (e.response!.statusCode == 400) {
+        return 'Invalid request: ${e.response!.data['error'] ?? 'Bad request'}';
+      } else if (e.response!.statusCode == 413) {
+        return 'File too large';
+      } else if (e.response!.statusCode == 415) {
+        return 'Unsupported media type: ${e.response!.data['error'] ?? 'Please upload a valid image file'}';
+      }
+      return 'Server error: ${e.response!.statusCode} - ${e.response!.data['error'] ?? 'Unknown error'}';
+    }
+
     switch (e.type) {
       case DioErrorType.connectionTimeout:
         return 'Connection timeout. Please check your network.';
@@ -173,12 +192,9 @@ class _EcoFriendlyFashionScanScreenState
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.green.shade200,
-        title: const Text(
-          'Eco-Friendly Fashion Scan',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: const Text('Eco-Friendly Fashion Scan'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -210,7 +226,7 @@ class _EcoFriendlyFashionScanScreenState
               ),
               const SizedBox(height: 30),
               GestureDetector(
-                onTap: () => _showImageSourceDialog(context),
+                onTap: isLoading ? null : () => _showImageSourceDialog(context),
                 child: isLoading
                     ? const CircularProgressIndicator()
                     : Image.asset(

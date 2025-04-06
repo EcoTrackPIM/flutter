@@ -39,7 +39,7 @@ class CustomToolbar extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (context) => CameraOptionsScreen(
                   fabric: "cotton", // Default value
-                  imagePath: "", // Empty path
+                  imagePath: "", compositionData: {}, brandData: '', carbonFootprint: 0, message: '', // Empty path
                 )),
               );
               if (result != null) {

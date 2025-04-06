@@ -3,17 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'CarboneFootPrint.dart';
 
-const String BEARER_TOKEN = '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';
-const String SERVER_URL = 'http://192.168.211.213:3000/upload';
-
 class CameraOptionsScreen extends StatefulWidget {
   final String fabric;
   final String imagePath;
+  final Map<String, dynamic> compositionData;
+  final String brandData;
+  final int carbonFootprint;
+  final String message;
 
   const CameraOptionsScreen({
     Key? key,
     required this.fabric,
     required this.imagePath,
+    required this.compositionData,
+    required this.brandData,
+    required this.carbonFootprint,
+    required this.message,
   }) : super(key: key);
 
   @override
@@ -22,7 +27,7 @@ class CameraOptionsScreen extends StatefulWidget {
 
 class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
   final List<Map<String, String>> outfits = [
-    {"name": "TShirt", "image": "assets/Tshirt.png"},
+    {"name": "T-Shirt", "image": "assets/Tshirt.png"},
     {"name": "Shirt", "image": "assets/Shirt.png"},
     {"name": "Pullover", "image": "assets/Pullover.png"},
     {"name": "Dress", "image": "assets/Dress.png"},
@@ -35,6 +40,8 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
 
   String? _selectedOutfit;
   bool _isUploading = false;
+  bool _isHovered = false;
+  int? _hoveredIndex;
   final Dio _dio = Dio();
 
   @override
@@ -44,21 +51,20 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
   }
 
   void _configureDio() {
-    _dio.options.baseUrl = SERVER_URL;
+    _dio.options.baseUrl = 'http://192.168.100.17:3000';
     _dio.options.connectTimeout = const Duration(seconds: 30);
-    _dio.options.receiveTimeout = const Duration(seconds: 30);
     _dio.options.headers = {
       'Authorization': 'Bearer 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',
-      'Accept': 'application/json',
     };
   }
 
-  void _saveLook() async {
+  Future<void> _saveLook() async {
     if (_selectedOutfit == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Please select an outfit first"),
-          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
         ),
       );
       return;
@@ -67,34 +73,22 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
     setState(() => _isUploading = true);
 
     try {
-      final response = await _uploadImage(File(widget.imagePath), _selectedOutfit!);
-
-      if (response != null && response['success'] == true) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CarbonFootprintScreen(
-              carbonFootprint: response['carbonFootprint']?.toDouble() ?? 0.0,
-              fabric: response['fabric'] ?? widget.fabric,
-              fileName: response['fileName'] ?? '',
-            ),
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CarbonFootprintScreen(
+            carbonFootprint: widget.carbonFootprint.toDouble(),
+            fabric: widget.fabric,
+            fileName: widget.imagePath.split('/').last,
+            outfitType: _selectedOutfit!,
           ),
-        );
-      } else {
-        throw Exception(response?['message'] ?? 'Failed to process outfit');
-      }
-    } on DioError catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${_getErrorMessage(e)}'),
-          backgroundColor: Colors.red,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: ${e.toString()}'),
-          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
         ),
       );
     } finally {
@@ -104,143 +98,224 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
     }
   }
 
-  Future<Map<String, dynamic>?> _uploadImage(File file, String clothingType) async {
-    try {
-      FormData formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(
-          file.path,
-          filename: 'outfit_${DateTime.now().millisecondsSinceEpoch}.jpg',
-        ),
-        'clothingType': clothingType,
-        'fabric': widget.fabric,
-      });
-
-      print('Uploading outfit data...');
-      print('Clothing type: $clothingType');
-      print('Fabric: ${widget.fabric}');
-
-      final response = await _dio.post(
-        '/upload',
-        data: formData,
-        options: Options(
-          contentType: 'multipart/form-data',
-        ),
-      );
-
-      print('Upload successful: ${response.data}');
-      return response.data;
-    } on DioError catch (e) {
-      print('Upload Error:');
-      print('- Type: ${e.type}');
-      print('- Message: ${e.message}');
-      print('- Response: ${e.response?.data}');
-      return null;
-    } catch (e) {
-      print('General Upload Error: $e');
-      return null;
-    }
-  }
-
-  String _getErrorMessage(DioError e) {
-    switch (e.type) {
-      case DioErrorType.connectionTimeout:
-        return 'Connection timeout';
-      case DioErrorType.sendTimeout:
-        return 'Upload timeout';
-      case DioErrorType.receiveTimeout:
-        return 'Server response timeout';
-      case DioErrorType.badResponse:
-        return 'Server error: ${e.response?.statusCode}';
-      case DioErrorType.cancel:
-        return 'Request cancelled';
-      case DioErrorType.unknown:
-        return 'Network error: ${e.message}';
-      default:
-        return 'Upload failed';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green.shade200,
-        title: const Text("Outfit Selection", style: TextStyle(color: Colors.black)),
+        title: const Text("Complete Your Look", style: TextStyle(fontWeight: FontWeight.bold)),
+        centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, size: 28),
           onPressed: () => Navigator.pop(context),
         ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
-            Text(
-              "Select your look: ${widget.fabric}",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade900,
+            // Fabric Info Card
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-            ),
-            const SizedBox(height: 10),
-            widget.imagePath.isNotEmpty
-                ? ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.file(
-                File(widget.imagePath),
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-              ),
-            )
-                : const Text("No image captured"),
-            const SizedBox(height: 20),
-            const Text(
-              "Choose an outfit:",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: outfits.map((outfit) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedOutfit = outfit["name"];
-                    });
-                  },
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        outfit["image"]!,
-                        width: 100,
-                        height: 100,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        File(widget.imagePath),
+                        width: 80,
+                        height: 80,
+                        fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.image_not_supported, size: 50),
+                            Container(
+                              width: 80,
+                              height: 80,
+                              color: Colors.grey[200],
+                              child: const Icon(Icons.image, size: 40),
+                            ),
                       ),
-                      Text(outfit["name"]!, style: const TextStyle(fontSize: 14)),
-                    ],
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Detected Fabric",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            widget.fabric,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Base Footprint: ${widget.carbonFootprint} kg CO₂",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.green[700],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Outfit Selection
+            const Text(
+              "SELECT OUTFIT TYPE",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Outfit Grid with Hover Effects
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 0.8,
+              ),
+              itemCount: outfits.length,
+              itemBuilder: (context, index) {
+                final outfit = outfits[index];
+                final isSelected = _selectedOutfit == outfit["name"];
+                final isHovered = _hoveredIndex == index;
+
+                return MouseRegion(
+                  onEnter: (_) => setState(() => _hoveredIndex = index),
+                  onExit: (_) => setState(() => _hoveredIndex = null),
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () => setState(() => _selectedOutfit = outfit["name"]),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? Colors.green[50]
+                            : isHovered
+                            ? Colors.grey[50]
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSelected
+                              ? Colors.green
+                              : isHovered
+                              ? Colors.grey[400]!
+                              : Colors.grey[300]!,
+                          width: isSelected ? 2 : 1,
+                        ),
+                        boxShadow: [
+                          if (isHovered || isSelected)
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: isSelected
+                                  ? Colors.green[100]
+                                  : isHovered
+                                  ? Colors.grey[200]
+                                  : Colors.grey[100],
+                            ),
+                            child: Center(
+                              child: Image.asset(
+                                outfit["image"]!,
+                                width: 40,
+                                height: 40,
+                                color: isSelected
+                                    ? Colors.green[800]
+                                    : Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            outfit["name"]!,
+                            style: TextStyle(
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected
+                                  ? Colors.green[800]
+                                  : Colors.grey[800],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 );
-              }).toList(),
+              },
             ),
-            const SizedBox(height: 20),
-            _isUploading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-              onPressed: _saveLook,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                backgroundColor: Colors.green.shade900,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: const Text(
-                "Save Outfit and Calculate Carbon Footprint",
-                style: TextStyle(fontSize: 14),
+
+            const SizedBox(height: 32),
+
+            // Calculate Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saveLook,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.green[700],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: _isUploading
+                    ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+                    : const Text(
+                  "CALCULATE CARBON FOOTPRINT",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
               ),
             ),
           ],
