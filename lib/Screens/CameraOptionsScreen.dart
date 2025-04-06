@@ -3,11 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'CarboneFootPrint.dart';
 
+const String BEARER_TOKEN = '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';
+const String SERVER_URL = 'http://192.168.211.213:3000/upload';
+
 class CameraOptionsScreen extends StatefulWidget {
   final String fabric;
   final String imagePath;
 
-  CameraOptionsScreen({required this.fabric, required this.imagePath});
+  const CameraOptionsScreen({
+    Key? key,
+    required this.fabric,
+    required this.imagePath,
+  }) : super(key: key);
 
   @override
   _CameraOptionsScreenState createState() => _CameraOptionsScreenState();
@@ -27,85 +34,129 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
   ];
 
   String? _selectedOutfit;
+  bool _isUploading = false;
+  final Dio _dio = Dio();
 
-  double calculateCarbonFootprint(String fabric, String clothingType) {
-    // Fabric carbon footprint values
-    Map<String, double> fabricFootprint = {
-      'linen': 2, // kg CO2 per kg of fabric
-      'cotton': 2.5,
-      'wool': 10,
-      'polyester': 5,
-      'silk': 10,
-      'hemp': 0.9,
-      'cashmere': 10,
-      'bamboo': 3,
-      'nylon': 6,
-      'spandex': 5
-    };
-
-    // Clothing type weight factors
-    Map<String, double> clothingWeight = {
-      'TShirt': 0.2, // kg
-      'Shirt': 0.3,
-      'Pullover': 0.5,
-      'Dress': 0.5,
-      'Skirt': 0.3,
-      'Jacket': 0.8,
-      'Pants': 0.5,
-      'Sweater': 0.4,
-      'Shorts': 0.15,
-      // Add more clothing types as needed
-    };
-
-    // Convert fabric to lowercase and fetch carbon footprint value
-    double fabricCarbon = fabricFootprint[fabric.toLowerCase()] ?? 1.0; // Default to 1 if not found
-    double clothingWeightFactor = clothingWeight[clothingType] ?? 0.0;
-
-    // Calculate total carbon footprint
-    return fabricCarbon * clothingWeightFactor;
+  @override
+  void initState() {
+    super.initState();
+    _configureDio();
   }
 
+  void _configureDio() {
+    _dio.options.baseUrl = SERVER_URL;
+    _dio.options.connectTimeout = const Duration(seconds: 30);
+    _dio.options.receiveTimeout = const Duration(seconds: 30);
+    _dio.options.headers = {
+      'Authorization': 'Bearer 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',
+      'Accept': 'application/json',
+    };
+  }
 
   void _saveLook() async {
     if (_selectedOutfit == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("You should choose an outfit before saving!"),
+          content: Text("Please select an outfit first"),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    double carbonFootprint = calculateCarbonFootprint(widget.fabric, _selectedOutfit!);
+    setState(() => _isUploading = true);
 
-    // Upload the image with the selected outfit type
-    await _uploadImage(File(widget.imagePath), _selectedOutfit!);
+    try {
+      final response = await _uploadImage(File(widget.imagePath), _selectedOutfit!);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CarbonFootprintScreen(
-          carbonFootprint: carbonFootprint, // Pass the calculated carbon footprint here
+      if (response != null && response['success'] == true) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CarbonFootprintScreen(
+              carbonFootprint: response['carbonFootprint']?.toDouble() ?? 0.0,
+              fabric: response['fabric'] ?? widget.fabric,
+              fileName: response['fileName'] ?? '',
+            ),
+          ),
+        );
+      } else {
+        throw Exception(response?['message'] ?? 'Failed to process outfit');
+      }
+    } on DioError catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${_getErrorMessage(e)}'),
+          backgroundColor: Colors.red,
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isUploading = false);
+      }
+    }
   }
 
-  Future<void> _uploadImage(File file, String clothingType) async {
+  Future<Map<String, dynamic>?> _uploadImage(File file, String clothingType) async {
     try {
-      String uploadUrl = 'http://192.168.1.19:3000/upload'; // Change to your server URL
-
       FormData formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(file.path, filename: 'image.jpg'),
-        'clothingType': clothingType, // Ensure clothing type is sent
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: 'outfit_${DateTime.now().millisecondsSinceEpoch}.jpg',
+        ),
+        'clothingType': clothingType,
+        'fabric': widget.fabric,
       });
 
-      final response = await Dio().post(uploadUrl, data: formData);
+      print('Uploading outfit data...');
+      print('Clothing type: $clothingType');
+      print('Fabric: ${widget.fabric}');
 
-      print('Upload response: ${response.data}');
+      final response = await _dio.post(
+        '/upload',
+        data: formData,
+        options: Options(
+          contentType: 'multipart/form-data',
+        ),
+      );
+
+      print('Upload successful: ${response.data}');
+      return response.data;
+    } on DioError catch (e) {
+      print('Upload Error:');
+      print('- Type: ${e.type}');
+      print('- Message: ${e.message}');
+      print('- Response: ${e.response?.data}');
+      return null;
     } catch (e) {
-      print('Error uploading image: $e');
+      print('General Upload Error: $e');
+      return null;
+    }
+  }
+
+  String _getErrorMessage(DioError e) {
+    switch (e.type) {
+      case DioErrorType.connectionTimeout:
+        return 'Connection timeout';
+      case DioErrorType.sendTimeout:
+        return 'Upload timeout';
+      case DioErrorType.receiveTimeout:
+        return 'Server response timeout';
+      case DioErrorType.badResponse:
+        return 'Server error: ${e.response?.statusCode}';
+      case DioErrorType.cancel:
+        return 'Request cancelled';
+      case DioErrorType.unknown:
+        return 'Network error: ${e.message}';
+      default:
+        return 'Upload failed';
     }
   }
 
@@ -117,9 +168,7 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
         title: const Text("Outfit Selection", style: TextStyle(color: Colors.black)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Padding(
@@ -140,7 +189,12 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
             widget.imagePath.isNotEmpty
                 ? ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.file(File(widget.imagePath), width: 100, height: 100, fit: BoxFit.cover),
+              child: Image.file(
+                File(widget.imagePath),
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
             )
                 : const Text("No image captured"),
             const SizedBox(height: 20),
@@ -161,19 +215,28 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
                   },
                   child: Column(
                     children: [
-                      Image.asset(outfit["image"]!, width: 100, height: 100),
-                      Text(outfit["name"]!, style: TextStyle(fontSize: 14)),
+                      Image.asset(
+                        outfit["image"]!,
+                        width: 100,
+                        height: 100,
+                        errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.image_not_supported, size: 50),
+                      ),
+                      Text(outfit["name"]!, style: const TextStyle(fontSize: 14)),
                     ],
                   ),
                 );
               }).toList(),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
+            _isUploading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
               onPressed: _saveLook,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 backgroundColor: Colors.green.shade900,
+                minimumSize: const Size(double.infinity, 50),
               ),
               child: const Text(
                 "Save Outfit and Calculate Carbon Footprint",

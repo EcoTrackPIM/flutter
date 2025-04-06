@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 class tagApi {
-  static const String _baseUrl = 'http://192.168.100.17:3000';
+  static const String _baseUrl = 'http://192.168.211.213:3000';
 
   static Future<Map<String, dynamic>> scanTag(File imageFile) async {
     try {
