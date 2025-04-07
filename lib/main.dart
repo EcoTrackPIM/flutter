@@ -1,5 +1,11 @@
-import 'package:ecotrack_front/screens/home.dart';
 import 'package:flutter/material.dart';
+import 'package:pimflutter/Screens/EcoFriendlyFashionScan.dart';
+import 'Screens/welcomeScreen.dart';
+import 'Screens/HomeScreen.dart';
+import 'dart:io'; // Add this
+import 'package:image_picker/image_picker.dart';
+
+
 
 void main() {
   runApp(const MyApp());
@@ -30,8 +36,9 @@ class MyApp extends StatelessWidget {
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: HomePage(),
+      home:  HomeScreen(),
     );
   }
 }
@@ -105,7 +112,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
+            const Text(
+              'You have pushed the button this many times:',
+            ),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,

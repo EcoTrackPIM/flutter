@@ -1,6 +1,6 @@
 {
-    "name": "ecotrack_front",
-    "short_name": "ecotrack_front",
+    "name": "pimflutter",
+    "short_name": "pimflutter",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
