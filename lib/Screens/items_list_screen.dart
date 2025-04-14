@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ItemsListScreen extends StatefulWidget {
   const ItemsListScreen({Key? key}) : super(key: key);
@@ -13,6 +15,7 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
   Map<String, String> categoryFromItem = {};
   Set<String> _highlightedItems = {};
   Map<String, double> usageFrequency = {};
+  final Map<String, String> _carbonFootprints = {};
 
   @override
   void initState() {
@@ -25,6 +28,10 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
   Future<void> _loadCategorizedItems() async {
     final prefs = await SharedPreferences.getInstance();
     final items = prefs.getStringList('scanned_items') ?? [];
+    final storedItems = items.map((e) => e.split('|').first).toList();
+    for (var itemName in storedItems) {
+      _fetchCarbonFootprint(itemName);
+    }
     final customCategories = prefs.getStringList('custom_categories') ?? [];
 
     Map<String, List<String>> tempMap = {};
@@ -102,9 +109,32 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Text(
+                        item,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       const Text('Item Options', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 16),
-                      SwitchListTile(
+                    const SizedBox(height: 16),
+                    if (_carbonFootprints.containsKey(item))
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.eco, color: Colors.green),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Carbon: ${_carbonFootprints[item]}',
+                              style: const TextStyle(fontSize: 14, color: Colors.black), // Changed to black
+                            ),
+                          ],
+                        ),
+                      ),
+                    SwitchListTile(
                         title: const Text('Flag Item'),
                         value: isFlagged,
                         onChanged: (bool value) async {
@@ -182,6 +212,29 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
                         onPressed: () => Navigator.of(context).pop(),
                         child: const Text('Close'),
                       ),
+                      const SizedBox(height: 8),
+                      TextButton.icon(
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          final allItems = prefs.getStringList('scanned_items') ?? [];
+                          final updatedItems = allItems.where((itemStr) {
+                            final parts = itemStr.split('|');
+                            return parts[0].trim() != item;
+                          }).toList();
+                          await prefs.setStringList('scanned_items', updatedItems);
+                          setState(() {
+                            categorizedItems[categoryFromItem[item]]?.remove(item);
+                            usageFrequency.remove(item);
+                            _highlightedItems.remove(item);
+                          });
+                          Navigator.of(context).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Item deleted')),
+                          );
+                        },
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        label: const Text('Delete Item', style: TextStyle(color: Colors.red)),
+                      ),
                     ],
                   ),
                 );
@@ -210,8 +263,25 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
         alignment: Alignment.center,
           child: Stack(
             children: [
-              Center(
-                child: Text(item, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14)),
+              Positioned.fill(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item,
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+                    if (_carbonFootprints.containsKey(item))
+                      Text(
+                        _carbonFootprints[item] ?? '',
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(fontSize: 12, color: Colors.black54),
+                      ),
+                  ],
+                ),
               ),
               if (usageFrequency.containsKey(item))
                 Positioned(
@@ -242,7 +312,7 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
       ),
     );
   }
- void _printAllStoredItemsToConsole() async {
+  void _printAllStoredItemsToConsole() async {
   final prefs = await SharedPreferences.getInstance();
   final items = prefs.getStringList('scanned_items') ?? [];
 
@@ -516,4 +586,21 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
       ),
     );
   }
-}
+  }
+
+  Future<void> _fetchCarbonFootprint(String itemName) async {
+    try {
+      final uri = Uri.parse('http://172.20.10.3:3000/carbon/footprint?item=${Uri.encodeComponent(itemName)}');
+      final response = await http.get(uri);
+ 
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        final footprint = decoded['carbonFootprint'];
+        debugPrint('🌍 $itemName: $footprint');
+      } else {
+        debugPrint('❌ Failed to fetch carbon footprint for $itemName');
+      }
+    } catch (e) {
+      debugPrint('🚫 Error fetching carbon data for $itemName: $e');
+    }
+  }
