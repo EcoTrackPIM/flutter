@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../Components/Toolbar.dart';
-
+import 'package:pimflutter/Screens/items_list_screen.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -182,13 +182,18 @@ class _ProfileMenu extends StatelessWidget {
             },
           ),
           const Divider(height: 1),
-          _MenuTile(
-            icon: Icons.favorite_border,
-            title: 'Saved Items',
-            onTap: () {
-              // Navigate to saved items
-            },
-          ),
+_MenuTile(
+  icon: Icons.favorite_border,
+  title: 'Saved Items',
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+builder: (context) => const ItemsListScreen(),
+      ),
+    );
+  },
+),
           const Divider(height: 1),
           _MenuTile(
             icon: Icons.eco,

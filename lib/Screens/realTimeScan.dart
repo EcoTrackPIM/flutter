@@ -61,14 +61,13 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
     super.initState();
     _initializeCamera();
     _loadModelAndLabels();
-    _loadScannedItems();
   }
 
   Future<void> _loadScannedItems() async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> savedItems = prefs.getStringList('scanned_items') ?? [];
     setState(() {
-      scannedItems = []; // Do not show stored items
+      scannedItems = savedItems.map((e) => e.split('|').first).toList();
     });
   }
 
@@ -159,6 +158,7 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
           : 'Unknown';
       if (!scannedItems.contains(label)) {
         scannedItems.add(label);
+        _saveItemToStorage(label);
         setState(() => _showCaptureFeedback = true);
         Future.delayed(const Duration(seconds: 1), () {
           if (mounted) {
@@ -202,10 +202,10 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
   void _saveItemToStorage(String item) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> savedItems = prefs.getStringList('scanned_items') ?? [];
-
-    final entry = '$item|${DateTime.now().toIso8601String()}';
+ 
+    final entry = '$item|General';
     final alreadyExists = savedItems.any((e) => e.startsWith('$item|'));
-
+ 
     if (!alreadyExists) {
       savedItems.add(entry);
       await prefs.setStringList('scanned_items', savedItems);
@@ -213,6 +213,24 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
     } else {
       debugPrint('ℹ️ Item already in storage: $item');
     }
+  }
+
+  void _saveMultipleItemsToStorage(List<String> items) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> savedItems = prefs.getStringList('scanned_items') ?? [];
+
+    for (final item in items) {
+      final entry = '$item|General';
+      final alreadyExists = savedItems.any((e) => e.startsWith('$item|'));
+      if (!alreadyExists) {
+        savedItems.add(entry);
+        debugPrint('✅ Saved to storage: $entry');
+      } else {
+        debugPrint('ℹ️ Already in storage: $item');
+      }
+    }
+
+    await prefs.setStringList('scanned_items', savedItems);
   }
 
   void _clearStoredItems() async {
@@ -243,6 +261,7 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
   }
 
   void _showScannedItemsDialog() {
+    selectedItems.clear();
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -271,14 +290,34 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Scanned Items', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                          if (selectedItems.isNotEmpty)
-                            IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                _deleteSelectedItems();
-                                setModalState(() {}); // Refresh modal state after delete
-                              },
-                            ),
+                          Row(
+                            children: [
+                              if (selectedItems.isNotEmpty)
+                                IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () {
+                                    _deleteSelectedItems();
+                                    setModalState(() {}); // Refresh modal state after delete
+                                  },
+                                ),
+                              if (selectedItems.isNotEmpty)
+                                IconButton(
+                                  icon: const Icon(Icons.add_box, color: Colors.green),
+                                  onPressed: () {
+                                    final selectedLabels = selectedItems.map((i) => scannedItems[i]).toList();
+                                    _saveMultipleItemsToStorage(selectedLabels);
+                                    setState(() {
+                                      scannedItems = scannedItems.asMap().entries
+                                          .where((entry) => !selectedItems.contains(entry.key))
+                                          .map((entry) => entry.value)
+                                          .toList();
+                                      selectedItems.clear();
+                                    });
+                                    setModalState(() {});
+                                  },
+                                ),
+                            ],
+                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -311,6 +350,11 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
                                                 icon: const Icon(Icons.add_circle, color: Colors.green),
                                                 onPressed: () {
                                                   _saveItemToStorage(scannedItems[index]);
+                                                  setState(() {
+                                                    scannedItems.removeAt(index);
+                                                    selectedItems.remove(index);
+                                                  });
+                                                  setModalState(() {});
                                                 },
                                               ),
                                             ],
@@ -431,6 +475,7 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
   void dispose() {
     _controller?.dispose();
     interpreter.close();
+    scannedItems.clear();
     super.dispose();
   }
 

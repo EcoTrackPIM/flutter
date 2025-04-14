@@ -91,3 +91,4 @@ flutter:
     - assets/eco_friendly_scan.png
     - assets/object_detection.png     # Custom icon for object detection card
     - assets/detection_logo.png    # Custom icon for object detection card
+    - assets/profile_placeholder.png
