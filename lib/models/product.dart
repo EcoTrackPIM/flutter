@@ -7,7 +7,8 @@ class Product {
   final double carbonImpact;
   final String? ingredients;
   final String? recyclability;
-  
+  final List<String>? languages;
+
   Product({
     required this.code,
     required this.productName,
@@ -17,18 +18,20 @@ class Product {
     this.carbonImpact = 0.0,
     this.ingredients,
     this.recyclability,
+    this.languages,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      code: json['code'] ?? 'Inconnu',
-      productName: json['product_name'] ?? 'Nom inconnu',
+      code: json['code'] ?? '',
+      productName: json['product_name'] ?? '',
       brands: json['brands'],
       categories: json['categories'],
-      imageUrl: json['image_url'],
-      carbonImpact: (json['ecoscore_data']?['agribalyse']?['co2_total'] ?? 0.0).toDouble(),
-      ingredients: json['ingredients_text'],
-      recyclability: json['packaging'] ?? 'Non spécifié',
+      imageUrl: json['imageUrl'],
+      carbonImpact: (json['carbonImpact'] ?? 0.0).toDouble(),
+      ingredients: json['ingredients'],
+      recyclability: json['recyclability'],
+      languages: json['languages'] != null ? List<String>.from(json['languages']) : null,
     );
   }
 }
