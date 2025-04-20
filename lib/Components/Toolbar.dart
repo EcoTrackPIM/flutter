@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import '../Screens/CameraOptionsScreen.dart';
+import '../Screens/HomeScreen.dart';
+import '../Screens/ScanOptionsScreen.dart';
 
 class CustomToolbar extends StatelessWidget {
-  final VoidCallback onProfilePressed;
-  final VoidCallback onSettingsPressed;
+  final BuildContext context;
+  final int currentIndex;
 
   const CustomToolbar({
     Key? key,
-    required this.onProfilePressed,
-    required this.onSettingsPressed,
+    required this.context,
+    required this.currentIndex,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -26,39 +27,62 @@ class CustomToolbar extends StatelessWidget {
         ],
         borderRadius: BorderRadius.circular(30),
       ),
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          // Home - clickable
           IconButton(
-            icon: Icon(Icons.person, color: Colors.grey[700], size: 28),
-            onPressed: onProfilePressed,
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CameraOptionsScreen(
-                  fabric: "cotton", // Default value
-                  imagePath: "", compositionData: {}, brandData: '', carbonFootprint: 0, message: '', // Empty path
-                )),
-              );
-              if (result != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Image Path: $result")),
+            icon: Icon(Icons.home,
+                color: currentIndex == 0 ? Color(0xFF4D8B6F) : Colors.grey[700],
+                size: 28),
+            onPressed: () {
+              if (currentIndex != 0) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
                 );
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              shape: const CircleBorder(),
-              padding: const EdgeInsets.all(16),
-              elevation: 5,
-            ),
-            child: const Icon(Icons.camera_alt, color: Colors.white, size: 32),
           ),
+
+          // Transport - non-clickable
           IconButton(
-            icon: Icon(Icons.settings, color: Colors.grey[700], size: 28),
-            onPressed: onSettingsPressed,
+            icon: Icon(Icons.directions_car,
+                color: Colors.grey[400],
+                size: 28),
+            onPressed: null,
+          ),
+
+          // Food - non-clickable
+          IconButton(
+            icon: Icon(Icons.restaurant,
+                color: Colors.grey[400],
+                size: 28),
+            onPressed: null,
+          ),
+
+          // Clothing - clickable
+          IconButton(
+            icon: Icon(Icons.checkroom,
+                color: currentIndex == 1 ? Color(0xFF4D8B6F) : Colors.grey[700],
+                size: 28),
+            onPressed: () {
+              if (currentIndex != 1) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => ScanOptionsScreen()),
+                );
+              }
+            },
+          ),
+
+          // Energy - non-clickable
+          IconButton(
+            icon: Icon(Icons.bolt,
+                color: Colors.grey[400],
+                size: 28),
+            onPressed: null,
           ),
         ],
       ),

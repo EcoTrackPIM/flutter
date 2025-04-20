@@ -1,217 +1,515 @@
 import 'package:flutter/material.dart';
 import '../Components/Toolbar.dart';
-import './ScanOptionsScreen.dart'; // Import the screen for navigation
+import './ScanOptionsScreen.dart';
+import './profile_screen.dart';
+import './SettingsScreen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+  int _selectedFeatureIndex = 0;
+  late TabController _tabController;
+  final ScrollController _scrollController = ScrollController();
+  final Map<int, GlobalKey> _cardKeys = {
+    1: GlobalKey(), // Transport
+    2: GlobalKey(), // Clothing
+    3: GlobalKey(), // Food
+    4: GlobalKey(), // Energy
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToCard(int index) {
+    if (_cardKeys.containsKey(index)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_cardKeys[index]?.currentContext != null) {
+          Scrollable.ensureVisible(
+            _cardKeys[index]!.currentContext!,
+            duration: Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFFDAF7DE), // Light green app bar color
-        elevation: 0,
-        title: Row(
-          children: [
-            Image.asset(
-              "assets/logo.png",
-              width: 70, // Increased size
-              height: 70, // Increased size
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.menu, color: Colors.black), // Three-bar menu icon
-            onPressed: () {
-              // Open menu or drawer here
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Rest of the body content
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  const Text(
-                    "WHO ARE WE",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+      backgroundColor: Color(0xFFF8F9FA),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // App Bar with logo on right and text on left
+              Container(
+                height: MediaQuery.of(context).size.height * 0.35,
+                decoration: BoxDecoration(
+                  color: Color(0xFF4D8B6F),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
                   ),
-                  const SizedBox(height: 20),
-                  buildFeatureCard(
-                    "assets/transport.png",
-                    "Track your transport emissions",
-                    context,
-                  ),
-                  const SizedBox(height: 20),
-                  buildFeatureCard(
-                    "assets/Hanger_icon.png",
-                    "Outfits Time", // Navigation added for this card
-                    context,
-                  ),
-                  const SizedBox(height: 20),
-                  buildFeatureCard(
-                    "assets/food.png",
-                    "Analyze your food's carbon footprint",
-                    context,
-                  ),
-                  const SizedBox(height: 20),
-                  buildFeatureCard(
-                    "assets/energy.png",
-                    "Energy Consumption Tracking",
-                    context,
-                  ),
-                  const SizedBox(height: 30), // Space before phone image
-
-                  // New Image Placeholder for "phone.png"
-                  Center(
-                    child: Container(
-                      width: 200,
-                      height: 300,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white, // Placeholder color
+                ),
+                child: Stack(
+                  children: [
+                    // Profile and Settings icons at top right
+                    Positioned(
+                      top: 15,
+                      right: 15,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.person, color: Colors.white, size: 28),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ProfileScreen()),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.settings, color: Colors.white, size: 28),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SettingsScreen()),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                      child: Image.asset("assets/phone.png", fit: BoxFit.contain),
                     ),
-                  ),
-                  const SizedBox(height: 40), // Space before numbered sections
 
-                  // Section 1
-                  buildNumberedSection(
-                    "assets/number1.png",
-                    "Track your transport emissions :",
-                    "Compares travel emissions in real-time, suggesting greener options like carpooling or biking.",
-                  ),
-                  const SizedBox(height: 30),
+                    // Text on left
+                    Positioned(
+                      left: 20,
+                      top: 60,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Reduce",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "Your",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            "Carbon",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
-                  // Section 2
-                  buildNumberedSection(
-                    "assets/number2.png",
-                    "Analyze your food's carbon footprint Subheading :",
-                    "Predicts food carbon footprints and recommends sustainable alternatives.",
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Section 3
-                  buildNumberedSection(
-                    "assets/number3.png",
-                    "Energy Consumption Tracking:",
-                    "Monitors energy use via smart devices, offering savings tips.",
-                  ),
-                  const SizedBox(height: 20), // Final spacing
-                ],
+                    // Bigger logo on right
+                    Positioned(
+                      right: 40,
+                      top: 60,
+                      child: Image.asset(
+                        "assets/logo.png",
+                        width: 100,
+                        height: 100,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+
+              SizedBox(height: 25),
+
+              // Welcome Text
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Carbon",
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    Text(
+                      "Tracker",
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Track and reduce your carbon footprint",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 25),
+
+              // Feature Categories
+              Container(
+                height: 50,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  children: [
+                    _buildCategoryButton("All", 0, () {
+                      _scrollController.animateTo(
+                        0,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.easeInOut,
+                      );
+                    }),
+                    _buildCategoryButton("Transport", 1, () => _scrollToCard(1)),
+                    _buildCategoryButton("Clothing", 2, () => _scrollToCard(2)),
+                    _buildCategoryButton("Food", 3, () => _scrollToCard(3)),
+                    _buildCategoryButton("Energy", 4, () => _scrollToCard(4)),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 20),
+
+              // Feature Cards
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    // Transport Card
+                    KeyedSubtree(
+                      key: _cardKeys[1],
+                      child: _buildFeatureCard(
+                        title: "Transport Emissions",
+                        description: "Track your transport carbon footprint",
+                        iconData: Icons.directions_car,
+                        imagePath: "assets/transport.png",
+                        color: Color(0xFF8FB996),
+                        onTap: () {},
+                      ),
+                    ),
+
+                    // Clothing Card
+                    KeyedSubtree(
+                      key: _cardKeys[2],
+                      child: _buildFeatureCard(
+                        title: "Outfit Scan",
+                        description: "Scan clothes to check carbon footprint",
+                        iconData: Icons.qr_code_scanner,
+                        imagePath: "assets/Hanger_icon.png",
+                        color: Color(0xFF4D8B6F),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ScanOptionsScreen()),
+                          );
+                        },
+                      ),
+                    ),
+
+                    // Food Card
+                    KeyedSubtree(
+                      key: _cardKeys[3],
+                      child: _buildFeatureCard(
+                        title: "Food Tracker",
+                        description: "Analyze your food's carbon footprint",
+                        iconData: Icons.restaurant_menu,
+                        imagePath: "assets/food.png",
+                        color: Color(0xFF6A8D73),
+                        onTap: () {},
+                      ),
+                    ),
+
+                    // Energy Card
+                    KeyedSubtree(
+                      key: _cardKeys[4],
+                      child: _buildFeatureCard(
+                        title: "Energy Usage",
+                        description: "Track your home energy consumption",
+                        iconData: Icons.bolt,
+                        imagePath: "assets/energy.png",
+                        color: Color(0xFFB5E48C),
+                        onTap: () {},
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
+
+                    // About Us Section
+                    Container(
+                      padding: EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 10,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "WHO ARE WE",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          SizedBox(height: 15),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildNumberedItem(
+                                      "1",
+                                      "Track your transport emissions",
+                                      "Compare travel emissions in real-time",
+                                    ),
+                                    SizedBox(height: 15),
+                                    _buildNumberedItem(
+                                      "2",
+                                      "Analyze your food's carbon footprint",
+                                      "Get recommendations for sustainable alternatives",
+                                    ),
+                                    SizedBox(height: 15),
+                                    _buildNumberedItem(
+                                      "3",
+                                      "Energy Consumption Tracking",
+                                      "Monitor energy use and get saving tips",
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: CustomToolbar(
-        onProfilePressed: () {
-          // Navigate to Profile Screen
-          print("Profile pressed");
-        },
-        onSettingsPressed: () {
-          // Navigate to Settings Screen
-          print("Settings pressed");
-        },
+        context: context,
+        currentIndex: 0, // Home is active
       ),
     );
   }
 
-  Widget buildFeatureCard(String imagePath, String text, BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(50), // Oval shape like in screenshot
-        border: Border.all(color: Colors.grey.shade300),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 5,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(imagePath, width: 120, height: 80), // Adjusted image size
-          const SizedBox(height: 10),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.black,
+  Widget _buildCategoryButton(String title, int index, VoidCallback onTap) {
+    bool isSelected = _selectedFeatureIndex == index;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedFeatureIndex = index;
+        });
+        onTap();
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 5),
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          color: isSelected ? Color(0xFF4D8B6F) : Colors.white,
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: isSelected
+              ? [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              blurRadius: 5,
+              offset: Offset(0, 3),
             ),
-            textAlign: TextAlign.center,
+          ]
+              : null,
+        ),
+        child: Center(
+          child: Text(
+            title,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.grey[600],
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
           ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: 120,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                if (text == "Outfits Time") {
-                  // Navigate to EcoFriendlyFashionScanScreen when "Outfits Time" is clicked
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ScanOptionsScreen()),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeatureCard({
+    required String title,
+    required String description,
+    required IconData iconData,
+    required String imagePath,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 100,
+              height: 120,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.2),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  bottomLeft: Radius.circular(15),
                 ),
               ),
-              child: const Text(
-                "Start now",
-                style: TextStyle(color: Colors.white, fontSize: 14),
+              child: Center(
+                child: Image.asset(
+                  imagePath,
+                  width: 70,
+                  height: 70,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-          ),
-        ],
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Colors.grey[400],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget buildNumberedSection(String imagePath, String title, String description) {
+  Widget _buildNumberedItem(String number, String title, String description) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Image.asset(imagePath, width: 50, height: 50), // Numbered icon (1, 2, 3)
-        const SizedBox(width: 16), // Space between image and text
+        Container(
+          width: 25,
+          height: 25,
+          decoration: BoxDecoration(
+            color: Color(0xFF4D996F),
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              number,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 18,
+                style: TextStyle(
+                  fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.grey[800],
                 ),
               ),
-              const SizedBox(height: 5),
+              SizedBox(height: 3),
               Text(
                 description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
                 ),
               ),
             ],

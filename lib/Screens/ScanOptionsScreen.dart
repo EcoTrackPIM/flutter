@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import './EcoFriendlyFashionScan.dart';
 import './TagScannerScreen.dart';
+import '../Components/Toolbar.dart';
+import './HomeScreen.dart'; // <-- Make sure this path is correct
 
 class ScanOptionsScreen extends StatelessWidget {
   @override
@@ -8,6 +10,16 @@ class ScanOptionsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Color(0xFFF5F9F5),
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.black87,
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          },
+        ),
         title: Text('Scan Options', style: TextStyle(color: Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -45,9 +57,9 @@ class ScanOptionsScreen extends StatelessWidget {
                 title: "Eco Fashion Scan",
                 subtitle: "Sustainability Analysis",
                 description: "Get insights about your outfit's environmental impact",
-                color: Color(0xFF2ECC71),
+                color: Color(0xFF4D8B6F),
                 gradient: LinearGradient(
-                  colors: [Color(0xFF2ECC71), Color(0xFF27AE60)],
+                  colors: [Color(0xFF4D8B6F), Color(0xFF6AB4E1)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -60,18 +72,22 @@ class ScanOptionsScreen extends StatelessWidget {
                 title: "Tag Scanner",
                 subtitle: "Fabric Composition",
                 description: "Scan clothing tags to analyze material composition",
-                color: Color(0xFF3498DB),
+                color: Color(0xFF4D8B6F),
                 gradient: LinearGradient(
-                  colors: [Color(0xFF3498DB), Color(0xFF2980B9)],
+                  colors: [Color(0xFF6AB4E1), Color(0xFF4D8B6F)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 destination: TagScannerScreen(),
               ),
-              SizedBox(height: 24), // Extra space at the bottom
+              SizedBox(height: 24),
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: CustomToolbar(
+        context: context,
+        currentIndex: 1, // Clothing is active
       ),
     );
   }
@@ -87,7 +103,10 @@ class ScanOptionsScreen extends StatelessWidget {
     required Widget destination,
   }) {
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => destination)),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => destination),
+      ),
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Api/authApi.dart';
 import 'homeScreen.dart';
-import 'forgetPassword.dart'; // Import Forgot Password Screen
+import 'forgetPassword.dart';
+import 'signUpScreen.dart';
+import 'OnboardingScreens.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,10 +18,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final ApiService apiService = ApiService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   bool _isPasswordVisible = false;
   bool _isLoading = false;
+  bool _rememberMe = false;
+  bool _isGoogleLoading = false;
   String? _errorMessage;
 
   Future<void> _login() async {
@@ -34,10 +39,18 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (response.containsKey('accessToken')) {
-        await _storage.write(key: "token", value: response['accessToken']); // Securely store token
+        await _storage.write(key: "token", value: response['accessToken']);
+        await _storage.write(key: "refreshToken", value: response['refreshToken']);
+        await _storage.write(key: "rememberMe", value: _rememberMe.toString());
+
+        final prefs = await SharedPreferences.getInstance();
+        final bool hasCompletedOnboarding = prefs.getBool('hasCompletedOnboarding') ?? false;
+
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(
+            builder: (context) => OnboardingScreens(), // Always show onboarding
+          ),
         );
       } else {
         setState(() {
@@ -52,6 +65,29 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    setState(() => _isGoogleLoading = true);
+
+    try {
+      final response = await apiService.signInWithGoogle();
+
+      if (response.containsKey('accessToken') && mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => OnboardingScreens()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _errorMessage = "Google Sign-In failed: ${e.toString()}");
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isGoogleLoading = false);
+      }
     }
   }
 
@@ -107,20 +143,49 @@ class _LoginScreenState extends State<LoginScreen> {
                             "Welcome Back!",
                             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                           ),
+                          const SizedBox(height: 5),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (context) => SignUpScreen()),
+                              );
+                            },
+                            child: RichText(
+                              text: TextSpan(
+                                text: "Don't have an account? ",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: "Sign up",
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 14,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 30),
                           buildTextField("Your Email Address", _emailController),
                           const SizedBox(height: 20),
                           buildPasswordField(),
                           const SizedBox(height: 10),
+                          buildRememberMeCheckbox(),
                           if (_errorMessage != null)
                             Text(
                               _errorMessage!,
                               style: TextStyle(color: Colors.red, fontSize: 14),
                             ),
-                          const SizedBox(height: 30),
+                          const SizedBox(height: 20),
                           buildLoginButton(context),
-                          const SizedBox(height: 10), // Spacing before Forgot Password
-                          buildForgotPasswordText(context), // ✅ Added Forgot Password Text
+                          const SizedBox(height: 10),
+                          buildForgotPasswordText(context),
                           const SizedBox(height: 20),
                           buildDivider(),
                           const SizedBox(height: 20),
@@ -133,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
-          if (_isLoading)
+          if (_isLoading || _isGoogleLoading)
             Positioned.fill(
               child: Container(
                 color: Colors.black.withOpacity(0.3),
@@ -142,6 +207,30 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
         ],
       ),
+    );
+  }
+
+  Widget buildRememberMeCheckbox() {
+    return Row(
+      children: [
+        Checkbox(
+          value: _rememberMe,
+          onChanged: (value) {
+            setState(() {
+              _rememberMe = value!;
+            });
+          },
+          activeColor: Color(0xFF0B6E4F),
+        ),
+        Text(
+          "Remember Me",
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.black,
+          ),
+        ),
+        Spacer(),
+      ],
     );
   }
 
@@ -211,13 +300,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// ✅ Forgot Password Text Button
   Widget buildForgotPasswordText(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ForgotPasswordScreen()), // Navigate to forgot password screen
+          MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
         );
       },
       child: Text(
@@ -226,7 +314,7 @@ class _LoginScreenState extends State<LoginScreen> {
           color: Colors.blueAccent,
           fontSize: 14,
           fontWeight: FontWeight.w500,
-          decoration: TextDecoration.underline, // Underline to indicate a clickable link
+          decoration: TextDecoration.underline,
         ),
       ),
     );
@@ -254,9 +342,11 @@ class _LoginScreenState extends State<LoginScreen> {
           onPressed: () {},
         ),
         const SizedBox(width: 20),
-        IconButton(
+        _isGoogleLoading
+            ? CircularProgressIndicator()
+            : IconButton(
           icon: Image.asset("assets/google.png", width: 40),
-          onPressed: () {},
+          onPressed: _handleGoogleSignIn,
         ),
       ],
     );

@@ -197,12 +197,12 @@ class CarbonFootprintScreen extends StatelessWidget {
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: Colors.green[700]!),
+                      side: BorderSide(color: Color(0xFF4D8B6F)!),
                     ),
                     onPressed: () => Navigator.pop(context),
                     child: Text(
-                      "TRY ANOTHER OUTFIT",
-                      style: TextStyle(color: Colors.green[700]),
+                      "ANOTHER OUTFIT..",
+                      style: TextStyle(color: Color(0xFF4D8B6F)),
                     ),
                   ),
                 ),
@@ -210,7 +210,7 @@ class CarbonFootprintScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[700],
+                      backgroundColor: Color(0xFF4D8B6F),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                     onPressed: () => _saveResult(context),

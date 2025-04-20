@@ -51,7 +51,7 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
   }
 
   void _configureDio() {
-    _dio.options.baseUrl = 'http://192.168.100.17:3000';
+    _dio.options.baseUrl = 'http://192.168.137.207:3000';
     _dio.options.connectTimeout = const Duration(seconds: 30);
     _dio.options.headers = {
       'Authorization': 'Bearer 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',
@@ -164,7 +164,7 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "Base Footprint: ${widget.carbonFootprint} kg CO₂",
+                            "Base Footprint: ${widget.carbonFootprint} g CO₂",
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.green[700],
@@ -293,7 +293,7 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
                 onPressed: _saveLook,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.green[700],
+                  backgroundColor: Color(0xFF4D8B6F),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -305,13 +305,14 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
                   height: 20,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Colors.white,
+                    color: Color(0xFF4D8B6F),
                   ),
                 )
                     : const Text(
                   "CALCULATE CARBON FOOTPRINT",
                   style: TextStyle(
                     fontSize: 16,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
                   ),

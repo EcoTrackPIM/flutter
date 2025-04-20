@@ -1,10 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:io';
+import 'package:http_parser/http_parser.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ApiService {
-  final String baseUrl = "http://192.168.100.17:3000"; // Ensure this is the correct backend URL
-  final storage = FlutterSecureStorage();
+  final String baseUrl = "http://192.168.137.207:3000";
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
 
   Future<Map<String, dynamic>> registerUser({
     required String name,
@@ -47,22 +51,102 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> sendResetPasswordEmail(String email) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/auth/forget-password'),
-      body: jsonEncode({'email': email}),
-      headers: {'Content-Type': 'application/json'},
-    );
 
-    return jsonDecode(response.body);
+  Future<Map<String, dynamic>> uploadProfileImage(File imageFile) async {
+    final token = await storage.read(key: "token");
+    if (token == null) throw Exception('No authentication token found');
+
+    final url = Uri.parse('$baseUrl/auth/upload-profile-image');
+    final request = http.MultipartRequest('POST', url);
+
+    // Add headers
+    request.headers['Authorization'] = 'Bearer $token';
+
+    // Add image file
+    final fileStream = http.ByteStream(imageFile.openRead());
+    final length = await imageFile.length();
+    final multipartFile = http.MultipartFile(
+      'image',
+      fileStream,
+      length,
+      filename: imageFile.path.split('/').last,
+      contentType: MediaType('image', 'jpeg'),
+    );
+    request.files.add(multipartFile);
+
+    try {
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(responseBody);
+        return responseData;
+      } else {
+        throw Exception('Failed to upload image: ${response.statusCode} - $responseBody');
+      }
+    } catch (e) {
+      throw Exception('Image upload error: $e');
+    }
   }
+
+
+  Future<Map<String, dynamic>> updateProfile({
+    String? name,
+    String? phoneNumber,
+    String? address,
+    String? age,
+    String? bio,
+    String? profileImage,
+  }) async {
+    final token = await storage.read(key: "token");
+    if (token == null) throw Exception('No authentication token found');
+
+    final url = Uri.parse('$baseUrl/auth/update');
+    final Map<String, dynamic> requestBody = {
+      if (name != null) 'name': name,
+      if (phoneNumber != null) 'Phone_number': phoneNumber,
+      if (address != null) 'Address': address,
+      if (age != null) 'Age': int.tryParse(age),
+      if (bio != null) 'bio': bio,
+      if (profileImage != null) 'profileImage': profileImage,
+    };
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+
+        // Update stored user data for any non-null values
+        if (name != null) await storage.write(key: "userName", value: name);
+        if (phoneNumber != null) await storage.write(key: "userPhone", value: phoneNumber);
+        if (address != null) await storage.write(key: "userAddress", value: address);
+        if (age != null) await storage.write(key: "userAge", value: age);
+        if (profileImage != null) await storage.write(key: "userProfileImage", value: profileImage);
+
+        return responseData;
+      } else {
+        throw Exception('Failed to update profile: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Profile update error: $e');
+    }
+  }
+
+
 
   Future<Map<String, dynamic>> loginUser({
     required String email,
     required String password,
   }) async {
     final url = Uri.parse('$baseUrl/auth/login');
-
     final Map<String, dynamic> requestBody = {
       "email": email,
       "password": password,
@@ -85,9 +169,25 @@ class ApiService {
 
         if (responseData.containsKey('accessToken')) {
           print("✅ Login Successful. Token received.");
-
-          // Save access token securely
           await storage.write(key: "token", value: responseData['accessToken']);
+          await storage.write(key: "userId", value: responseData['user']['_id']);
+          await storage.write(key: "userName", value: responseData['user']['name']);
+
+          // Store additional user data for easy access
+          if (responseData['user']['Phone_number'] != null) {
+            await storage.write(key: "userPhone", value: responseData['user']['Phone_number']);
+          }
+          if (responseData['user']['Address'] != null) {
+            await storage.write(key: "userAddress", value: responseData['user']['Address']);
+          }
+          if (responseData['user']['Age'] != null) {
+            await storage.write(key: "userAge", value: responseData['user']['Age'].toString());
+          }
+
+          if (responseData.containsKey('refreshToken')) {
+            await storage.write(key: "refreshToken", value: responseData['refreshToken']);
+          }
+
           return responseData;
         } else {
           print("❌ Login response missing accessToken");
@@ -103,13 +203,164 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> signInWithGoogle() async {
+  try {
+  final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+  final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+  final String? idToken = googleAuth.idToken; // Correct ID token usage
+
+  final response = await http.post(
+  Uri.parse('$baseUrl/auth/google-login'),
+  body: jsonEncode({"token": idToken}), // Proper token forwarding
+  );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        await _storeAuthData(responseData);
+        return responseData;
+      } else {
+        throw Exception('Google login failed: ${response.body}');
+      }
+    } catch (e) {
+      await _googleSignIn.signOut();
+      throw Exception('Google Sign-In Error: $e');
+    }
+  }
+
+
+  Future<void> _storeAuthData(Map<String, dynamic> responseData) async {
+    await storage.write(key: "token", value: responseData['accessToken']);
+    await storage.write(key: "userId", value: responseData['user']['_id']);
+    await storage.write(key: "userName", value: responseData['user']['name']);
+
+    if (responseData.containsKey('refreshToken')) {
+      await storage.write(key: "refreshToken", value: responseData['refreshToken']);
+    }
+
+    // Store additional user data if available
+    if (responseData['user']['email'] != null) {
+      await storage.write(key: "userEmail", value: responseData['user']['email']);
+    }
+    if (responseData['user']['Profile_pic'] != null) {
+      await storage.write(key: "userProfileImage", value: responseData['user']['Profile_pic']);
+    }
+  }
+
+  Future<Map<String, dynamic>> getUserProfile() async {
+    final token = await storage.read(key: "token");
+    if (token == null) {
+      throw Exception('No authentication token found');
+    }
+
+    final url = Uri.parse('$baseUrl/auth/profile');
+
+    print("🔹 Fetching user profile...");
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+      );
+
+      print("🔹 Profile Response Code: ${response.statusCode}");
+      print("🔹 Profile Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print("✅ Profile fetched successfully");
+
+        // Store all user data in secure storage
+        await _storeUserData(responseData);
+
+        return responseData;
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized - Please login again');
+      } else {
+        throw Exception('Failed to fetch profile: ${response.body}');
+      }
+    } catch (e) {
+      print("❌ Profile Error: $e");
+      throw Exception('Error fetching profile: $e');
+    }
+  }
+
+  Future<void> _storeUserData(Map<String, dynamic> userData) async {
+    if (userData.containsKey('name')) {
+      await storage.write(key: "userName", value: userData['name']);
+    }
+    if (userData.containsKey('Phone_number')) {
+      await storage.write(key: "userPhone", value: userData['Phone_number']);
+    }
+    if (userData.containsKey('Address')) {
+      await storage.write(key: "userAddress", value: userData['Address']);
+    }
+    if (userData.containsKey('Age')) {
+      await storage.write(key: "userAge", value: userData['Age'].toString());
+    }
+    if (userData.containsKey('email')) {
+      await storage.write(key: "userEmail", value: userData['email']);
+    }
+  }
+
+
+
+  Future<Map<String, String>> getStoredUserData() async {
+    return {
+      'name': await storage.read(key: "userName") ?? '',
+      'phone': await storage.read(key: "userPhone") ?? '',
+      'address': await storage.read(key: "userAddress") ?? '',
+      'age': await storage.read(key: "userAge") ?? '',
+      'email': await storage.read(key: "userEmail") ?? '',
+    };
+  }
+
+  Future<void> logout() async {
+    // Add Google sign-out
+    await _googleSignIn.signOut();
+    // Keep existing logout logic
+    await storage.delete(key: "token");
+    await storage.delete(key: "refreshToken");
+    await storage.delete(key: "userId");
+    await storage.delete(key: "userName");
+    await storage.delete(key: "userPhone");
+    await storage.delete(key: "userAddress");
+    await storage.delete(key: "userAge");
+    await storage.delete(key: "userEmail");
+    print("✅ User logged out successfully");
+  }
+
+  Future<String?> getToken() async {
+    return await storage.read(key: "token");
+  }
+
+  Future<String?> getUserId() async {
+    return await storage.read(key: "userId");
+  }
+
+  Future<String?> getUserName() async {
+    return await storage.read(key: "userName") ?? 'User';
+  }
+
+  // Existing methods below remain unchanged...
+  Future<Map<String, dynamic>> sendResetPasswordEmail(String email) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/auth/forget-password'),
+      body: jsonEncode({'email': email}),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    return jsonDecode(response.body);
+  }
+
   Future<void> resetPassword({
     required String email,
     required String code,
     required String newPassword,
   }) async {
     final url = Uri.parse('$baseUrl/auth/reset-password');
-
     final Map<String, dynamic> requestBody = {
       "email": email,
       "code": code,
@@ -140,13 +391,5 @@ class ApiService {
       print("❌ Reset Password Error: $e");
       throw Exception('Error during password reset: $e');
     }
-  }
-
-  Future<void> logout() async {
-    await storage.delete(key: "token");
-  }
-
-  Future<String?> getToken() async {
-    return await storage.read(key: "token");
   }
 }

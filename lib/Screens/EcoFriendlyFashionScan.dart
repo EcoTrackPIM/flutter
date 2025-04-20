@@ -6,7 +6,7 @@ import 'package:http_parser/http_parser.dart';
 import 'CameraOptionsScreen.dart';
 
 const String BEARER_TOKEN = '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';
-const String SERVER_URL = 'http://192.168.100.17:3000/upload';
+const String SERVER_URL = 'http://192.168.137.207:3000/upload';
 
 class EcoFriendlyFashionScanScreen extends StatefulWidget {
   @override
@@ -39,28 +39,62 @@ class _EcoFriendlyFashionScanScreenState
   }
 
   Future<void> _showImageSourceDialog(BuildContext context) async {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Select Image Source"),
-        content: Column(
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text("Take Photo"),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
+            Text(
+              "Select Image Source",
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text("Choose from Gallery"),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _ImageSourceButton(
+                  icon: Icons.camera_alt_rounded,
+                  label: "Camera",
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera);
+                  },
+                  color: Color(0xFF4D8B6F),
+                ),
+                _ImageSourceButton(
+                  icon: Icons.photo_library_rounded,
+                  label: "Gallery",
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery);
+                  },
+                  color: Colors.blue,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
             ),
           ],
         ),
@@ -189,113 +223,341 @@ class _EcoFriendlyFashionScanScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        backgroundColor: Colors.green.shade200,
-        title: const Text('Eco-Friendly Fashion Scan'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/Hanger_icon.png',
-                height: 220,
-                errorBuilder: (context, error, stackTrace) =>
-                const Icon(Icons.checkroom, size: 100, color: Colors.green),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "You're rocking the outfit today!",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                ),
-              ),
-              const SizedBox(height: 5),
-              const Text(
-                "Let's make it even more eco-friendly",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-              const SizedBox(height: 30),
-              GestureDetector(
-                onTap: isLoading ? null : () => _showImageSourceDialog(context),
-                child: isLoading
-                    ? const CircularProgressIndicator()
-                    : Image.asset(
-                  "assets/eco_friendly_scan.png",
-                  height: 180,
-                  errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.camera_alt, size: 100, color: Colors.green),
-                ),
-              ),
-              const SizedBox(height: 20),
-              if (errorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    errorMessage!,
-                    style: const TextStyle(color: Colors.red),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ElevatedButton(
-                onPressed: isLoading ? null : () => _showImageSourceDialog(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade900,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: isLoading
-                    ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
-                    : const Text(
-                  "Scan Your Clothes",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "How it works:",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  "1. Take a photo or choose from gallery\n"
-                      "2. Our AI detects the fabric type\n"
-                      "3. Get the carbon footprint estimate\n"
-                      "4. Discover eco-friendly alternatives",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-            ],
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          'Eco Scan',
+          style: TextStyle(
+            color: Color(0xFF4D8B6F),
+            fontWeight: FontWeight.bold,
           ),
         ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF4D8B6F)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                const SizedBox(height: 24),
+                _HeaderSection(),
+                const SizedBox(height: 32),
+                _ScanSection(
+                  isLoading: isLoading,
+                  errorMessage: errorMessage,
+                  onTap: () => _showImageSourceDialog(context),
+                ),
+                const SizedBox(height: 40),
+                _HowItWorksSection(),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ImageSourceButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color color;
+
+  const _ImageSourceButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 120,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeaderSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Image.asset(
+          'assets/fashion_scan.png', // Replace with your actual image asset
+          height: 180,
+          errorBuilder: (context, error, stackTrace) => Icon(
+            Icons.checkroom_rounded,
+            size: 100,
+            color: Color(0xFF4D8B6F),
+          ),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          "You're rocking the outfit today!",
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4D8B6F),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          "Let's make it even more eco-friendly",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey.shade600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ScanSection extends StatelessWidget {
+  final bool isLoading;
+  final String? errorMessage;
+  final VoidCallback onTap;
+
+  const _ScanSection({
+    required this.isLoading,
+    required this.errorMessage,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: isLoading ? null : onTap,
+          child: Container(
+            height: 180,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: isLoading
+                ? Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF4D8B6F),
+              ),
+            )
+                : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.camera_alt_rounded,
+                  size: 48,
+                  color: Color(0xFF4D8B6F),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Scan Your Clothes",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF4D8B6F),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (errorMessage != null) ...[
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline_rounded, color: Colors.red.shade600),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    errorMessage!,
+                    style: TextStyle(color: Colors.red.shade600),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: isLoading ? null : onTap,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF4D8B6F),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+            ),
+            child: isLoading
+                ? SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            )
+                : Text(
+              "Start Scan",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HowItWorksSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "How it works:",
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4D8B6F),
+          ),
+        ),
+        const SizedBox(height: 16),
+        _StepItem(
+          number: 1,
+          title: "Take a photo",
+          description: "Capture your clothing item or choose from gallery",
+        ),
+        _StepItem(
+          number: 2,
+          title: "AI fabric detection",
+          description: "Our system analyzes the material composition",
+        ),
+        _StepItem(
+          number: 3,
+          title: "Carbon footprint",
+          description: "Get an estimate of environmental impact",
+        ),
+        _StepItem(
+          number: 4,
+          title: "Eco alternatives",
+          description: "Discover sustainable fashion options",
+        ),
+      ],
+    );
+  }
+}
+
+class _StepItem extends StatelessWidget {
+  final int number;
+  final String title;
+  final String description;
+
+  const _StepItem({
+    required this.number,
+    required this.title,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Color(0xFF4D8B6F),
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              number.toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                Text(
+                  description,
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -122,10 +122,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           buildTextField("Age", ageController, keyboardType: TextInputType.number),
                           const SizedBox(height: 30),
                           buildSignUpButton(context),
-                          const SizedBox(height: 20),
-                          buildDivider(),
-                          const SizedBox(height: 20),
-                          buildSocialButtons(),
                         ],
                       ),
                     ),
@@ -239,19 +235,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget buildDivider() => Divider(color: Colors.grey, thickness: 1);
-
-  Widget buildSocialButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(icon: Image.asset("assets/facebook.png", width: 40), onPressed: () {}),
-        const SizedBox(width: 20),
-        IconButton(icon: Image.asset("assets/google.png", width: 40), onPressed: () {}),
-      ],
     );
   }
 }
