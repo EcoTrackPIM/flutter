@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'CarboneFootPrint.dart';
+import 'CarbonFootprintScreen.dart';
 
 class CameraOptionsScreen extends StatefulWidget {
   final String fabric;
@@ -72,30 +72,7 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
 
     setState(() => _isUploading = true);
 
-    try {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CarbonFootprintScreen(
-            carbonFootprint: widget.carbonFootprint.toDouble(),
-            fabric: widget.fabric,
-            fileName: widget.imagePath.split('/').last,
-            outfitType: _selectedOutfit!,
-          ),
-        ),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: ${e.toString()}'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isUploading = false);
-      }
-    }
+  
   }
 
   @override

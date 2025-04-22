@@ -206,13 +206,7 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
     final entry = '$item|General';
     final alreadyExists = savedItems.any((e) => e.startsWith('$item|'));
  
-    if (!alreadyExists) {
-      savedItems.add(entry);
-      await prefs.setStringList('scanned_items', savedItems);
-      debugPrint('✅ Saved to storage: $entry');
-    } else {
-      debugPrint('ℹ️ Item already in storage: $item');
-    }
+
   }
 
   void _saveMultipleItemsToStorage(List<String> items) async {

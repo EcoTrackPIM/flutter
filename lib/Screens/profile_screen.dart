@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '/Screens/items_list_screen.dart';
 import '../Components/Toolbar.dart';
-import 'package:pimflutter/Screens/items_list_screen.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pimflutter/Components/Toolbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'CarbonFootprintScreen.dart';
 
 class ItemsListScreen extends StatefulWidget {
   const ItemsListScreen({Key? key}) : super(key: key);
@@ -13,594 +16,350 @@ class ItemsListScreen extends StatefulWidget {
 class _ItemsListScreenState extends State<ItemsListScreen> {
   Map<String, List<String>> categorizedItems = {};
   Map<String, String> categoryFromItem = {};
-  Set<String> _highlightedItems = {};
-  Map<String, double> usageFrequency = {};
   final Map<String, String> _carbonFootprints = {};
 
   @override
   void initState() {
     super.initState();
-    _loadCategorizedItems();
-        _printAllStoredItemsToConsole();
+
+    //_addManualItems(); // Add items manually on screen load
+        _loadCategorizedItems();
 
   }
+void _addManualItems() async {
+  final prefs = await SharedPreferences.getInstance();
+  
+  // Define your manual items
+  final List<String> manualItems = [
+  'screen|food',
+  'laptop|food',
+  'bath towel|food',
+  'Christmas stocking|food',
+  
+  // General Category
+  'modem|General',
+  'web site|General',
+  'space bar|General',
+  'monitor|General',
+  'ant|General',
+  'computer keyboard|General',
+  
+  // Kitchen Category
+  'shovel|kitchen',
+  'knife|kitchen',
+  'plate|kitchen',
+  'frying pan|kitchen',
+  
+  // Electronics Category
+  'television|electronics',
+  'smartphone|electronics',
+  'tablet|electronics',
+  'headphones|electronics',
+  'charger|electronics',
 
+  // Clothing Category
+  't-shirt|clothing',
+  'jeans|clothing',
+  'jacket|clothing',
+  'shoes|clothing',
+  'hat|clothing',
+
+  // Furniture Category
+  'sofa|furniture',
+  'table|furniture',
+  'chair|furniture',
+  'bookshelf|furniture',
+  'lamp|furniture',
+  
+  // Sports Category
+  'football|sports',
+  'basketball|sports',
+  'tennis racket|sports',
+  'gym equipment|sports',
+  'soccer ball|sports',
+  ];
+
+  // Retrieve any existing items from SharedPreferences
+  final List<String> savedItems = prefs.getStringList('scanned_items') ?? [];
+  
+  // Add the manual items to the list if they are not already in the storage
+  for (var item in manualItems) {
+    if (!savedItems.contains(item)) {
+      savedItems.add(item);
+    }
+  }
+
+  // Save the updated list back to SharedPreferences
+  await prefs.setStringList('scanned_items', savedItems);
+
+  debugPrint('✅ Manually added items to storage');
+}
   Future<void> _loadCategorizedItems() async {
+  final prefs = await SharedPreferences.getInstance();
+  final items = prefs.getStringList('scanned_items') ?? [];
+  final customCategories = prefs.getStringList('custom_categories') ?? [];
+
+  // 🔍 PRINT the raw stored items in terminal
+  print("📦 Loaded scanned_items from SharedPreferences:");
+  for (var item in items) {
+    print("- $item");
+  }
+
+  Map<String, List<String>> tempMap = {};
+
+  for (var item in items) {
+    final parts = item.split('|');
+    final name = parts[0].trim();
+    final category = parts.length > 1 && parts[1].trim().isNotEmpty ? parts[1].trim() : 'General';
+
+    if (!tempMap.containsKey(category)) {
+      tempMap[category] = [];
+    }
+    tempMap[category]!.add(name);
+    categoryFromItem[name] = category;
+  }
+
+  for (var category in customCategories) {
+    tempMap.putIfAbsent(category, () => []);
+  }
+
+  setState(() => categorizedItems = tempMap);
+}
+
+
+
+  void _moveItem(String itemName, String newCategory) async {
     final prefs = await SharedPreferences.getInstance();
     final items = prefs.getStringList('scanned_items') ?? [];
-    final storedItems = items.map((e) => e.split('|').first).toList();
-    for (var itemName in storedItems) {
-      _fetchCarbonFootprint(itemName);
-    }
-    final customCategories = prefs.getStringList('custom_categories') ?? [];
-
-    Map<String, List<String>> tempMap = {};
-
-    for (var item in items) {
-      final parts = item.split('|');
+    final updatedItems = items.map((e) {
+      final parts = e.split('|');
       final name = parts[0].trim();
-      final category = parts.length > 1 && parts[1].trim().isNotEmpty ? parts[1].trim() : 'General';
-      final isFlagged = parts.length >= 4 ? parts[3].trim() == 'true' : false;
-
-      if (!tempMap.containsKey(category)) {
-        tempMap[category] = [];
+      if (name == itemName) {
+        // Update shared preference key for category
+        prefs.setString('category_$itemName', newCategory);
+        return '$itemName|$newCategory';
+      } else {
+        return e;
       }
-      tempMap[category]!.add(name);
-      if (isFlagged) {
-        _highlightedItems.add(name);
-      }
-    }
-
-    for (var category in customCategories) {
-      tempMap.putIfAbsent(category, () => []);
-    }
-
-    if (!tempMap.containsKey('General')) {
-      tempMap['General'] = [];
-    }
-
-    for (var category in tempMap.entries) {
-      for (var item in category.value) {
-        categoryFromItem[item] = category.key;
-      }
-    }
-    for (var item in items) {
-      final parts = item.split('|');
-      if (parts.length >= 3) {
-        usageFrequency[parts[0].trim()] = double.tryParse(parts[2].trim()) ?? 0;
-      }
-    }
-
-    setState(() => categorizedItems = tempMap);
-  }
-
-  Future<void> _moveItemToCategory(String itemName, String fromCategory, String toCategory) async {
-    final prefs = await SharedPreferences.getInstance();
-    final allItems = prefs.getStringList('scanned_items') ?? [];
-
-    final updatedItems = allItems.map((item) {
-      final parts = item.split('|');
-      final name = parts[0].trim();
-      final cat = parts.length > 1 && parts[1].trim().isNotEmpty ? parts[1].trim() : 'General';
-      if (name == itemName && cat == fromCategory) {
-        return '$name|$toCategory';
-      }
-      return item;
     }).toList();
-
     await prefs.setStringList('scanned_items', updatedItems);
     _loadCategorizedItems();
   }
 
-  Widget _buildItemBox(String item, {bool highlighted = false}) {
-    return GestureDetector(
-      onTap: () {
-        showModalBottomSheet(
-          context: context,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-          ),
-          builder: (BuildContext context) {
-            bool isFlagged = _highlightedItems.contains(item);
-            return StatefulBuilder(
-              builder: (context, setModalState) {
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        item,
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text('Item Options', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 16),
-                    if (_carbonFootprints.containsKey(item))
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.eco, color: Colors.green),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Carbon: ${_carbonFootprints[item]}',
-                              style: const TextStyle(fontSize: 14, color: Colors.black), // Changed to black
-                            ),
-                          ],
-                        ),
-                      ),
-                    SwitchListTile(
-                        title: const Text('Flag Item'),
-                        value: isFlagged,
-                        onChanged: (bool value) async {
-                          setModalState(() {
-                            isFlagged = value;
-                          });
-                          setState(() {
-                            if (value) {
-                              _highlightedItems.add(item);
-                            } else {
-                              _highlightedItems.remove(item);
-                            }
-                          });
-
-                          final prefs = await SharedPreferences.getInstance();
-                          final allItems = prefs.getStringList('scanned_items') ?? [];
-                          final updatedItems = allItems.map((itemStr) {
-                            final parts = itemStr.split('|');
-                            final name = parts[0].trim();
-                            final cat = parts.length > 1 ? parts[1].trim() : 'General';
-                            final usage = parts.length > 2 ? parts[2].trim() : '0';
-                            if (name == item) {
-                              return '$name|$cat|$usage|$value';
-                            }
-                            return itemStr;
-                          }).toList();
-                          await prefs.setStringList('scanned_items', updatedItems);
-                        },
-                        secondary: const Icon(Icons.flag),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Usage per month:'),
-                          DropdownButton<double>(
-                            value: usageFrequency[item] ?? 0,
-                            items: [
-                              const DropdownMenuItem(value: 0.25, child: Text('¼')),
-                              const DropdownMenuItem(value: 0.5, child: Text('½')),
-                              ...List.generate(100, (i) => DropdownMenuItem(
-                                value: i.toDouble(),
-                                child: Text('$i'),
-                              )),
-                            ],
-                            onChanged: (value) async {
-                              final prefs = await SharedPreferences.getInstance();
-                              final allItems = prefs.getStringList('scanned_items') ?? [];
-                        
-                              final updatedItems = allItems.map((itemStr) {
-                                final parts = itemStr.split('|');
-                                final name = parts[0].trim();
-                                final cat = parts.length > 1 ? parts[1].trim() : 'General';
-                                if (name == item) {
-                                  return '$name|$cat|${value.toString()}';
-                                }
-                                return itemStr;
-                              }).toList();
-                        
-                              await prefs.setStringList('scanned_items', updatedItems);
-                        
-                              setState(() {
-                                usageFrequency[item] = value!;
-                              });
-                        
-                              Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Usage set to ${value == 0.25 ? "¼" : value == 0.5 ? "½" : value!.toInt()}')),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Close'),
-                      ),
-                      const SizedBox(height: 8),
-                      TextButton.icon(
-                        onPressed: () async {
-                          final prefs = await SharedPreferences.getInstance();
-                          final allItems = prefs.getStringList('scanned_items') ?? [];
-                          final updatedItems = allItems.where((itemStr) {
-                            final parts = itemStr.split('|');
-                            return parts[0].trim() != item;
-                          }).toList();
-                          await prefs.setStringList('scanned_items', updatedItems);
-                          setState(() {
-                            categorizedItems[categoryFromItem[item]]?.remove(item);
-                            usageFrequency.remove(item);
-                            _highlightedItems.remove(item);
-                          });
-                          Navigator.of(context).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Item deleted')),
-                          );
-                        },
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        label: const Text('Delete Item', style: TextStyle(color: Colors.red)),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        width: 70,
-        height: 70,
+    Widget _buildDraggableItem(String itemName) {
+  return LongPressDraggable<String>(
+    data: itemName,
+    feedback: Material(
+      color: Colors.transparent, // Makes feedback draggable item not have a background
+      child: Container(
+        width: 60,
+        height: 60,
         decoration: BoxDecoration(
-          color: _highlightedItems.contains(item) ? Colors.red.shade100 : (highlighted ? Colors.green.shade100 : Colors.white),
+          color: const Color(0xFFE5F5E9),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.green.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              spreadRadius: 1,
-            ),
-          ],
+          boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
         ),
         alignment: Alignment.center,
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item,
-                        textAlign: TextAlign.left,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ),
-                    if (_carbonFootprints.containsKey(item))
-                      Text(
-                        _carbonFootprints[item] ?? '',
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(fontSize: 12, color: Colors.black54),
-                      ),
-                  ],
-                ),
-              ),
-              if (usageFrequency.containsKey(item))
-                Positioned(
-                  top: 4,
-                  left: 4,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade800,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      usageFrequency[item]! >= 1
-                          ? usageFrequency[item]!.toInt().toString()
-                          : usageFrequency[item] == 0.5 ? '½' : '¼',
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
-                    ),
-                  ),
-                ),
-              if (_highlightedItems.contains(item))
-                Positioned(
-                  top: 4,
-                  right: 4,
-                  child: Icon(Icons.flag, color: Colors.red, size: 16),
-                ),
-            ],
-          ),
+        child: Text(
+          itemName,
+          style: const TextStyle(color: Colors.black, fontSize: 12),
+        ),
       ),
-    );
-  }
-  void _printAllStoredItemsToConsole() async {
-  final prefs = await SharedPreferences.getInstance();
-  final items = prefs.getStringList('scanned_items') ?? [];
+    ),
+    childWhenDragging: Material( // This part will display the placeholder while dragging
+      color: Colors.transparent, // Transparent color while dragging
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade300,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          itemName,
+          style: const TextStyle(color: Colors.black, fontSize: 12),
+        ),
+      ),
+    ),
+    onDragEnd: (details) {
+      if (details.wasAccepted) {
+        // If the item was dropped into a valid target, refresh the categorized items
+        _loadCategorizedItems();
+      }
+    },
+    child: GestureDetector(
+      onTap: () async {
+        final footprintText = _carbonFootprints[itemName] ?? '0';
+        final footprintValue = double.tryParse(footprintText.split(' ').first) ?? 0;
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CarbonFootprintScreen(itemName: itemName),
+          ),
+        );
 
-  debugPrint('🔎 Stored Items Debug Log:');
-  for (final item in items) {
-    final parts = item.split('|');
-    final name = parts.isNotEmpty ? parts[0].trim() : '';
-    final category = parts.length > 1 ? parts[1].trim() : 'General';
-    final usage = parts.length > 2 ? parts[2].trim() : '0';
-    final flagged = parts.length > 3 ? parts[3].trim() : 'false';
-
-    debugPrint('• Item: "$name" | Category: "$category" | Usage: $usage | Flagged: $flagged');
-  }
+        if (mounted && result == true) {
+          setState(() {
+            _loadCategorizedItems();
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Changes applied"),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+      child: Container(
+        width: 60,
+        height: 60,
+        margin: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.grey.shade300, width: 1),
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 3)],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              itemName,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12, color: Colors.black),
+            ),
+            if (_carbonFootprints.containsKey(itemName))
+              Text(
+                _carbonFootprints[itemName]!,
+                style: const TextStyle(fontSize: 10, color: Colors.black54),
+              ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green.shade800,
-        title: const Text('Items by Category'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: 'Add Category',
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  final TextEditingController _controller = TextEditingController();
 
-                  return AlertDialog(
-                    title: const Text('New Category'),
-                    content: TextField(
-                      controller: _controller,
-                      decoration: const InputDecoration(hintText: 'Enter category name'),
-                    ),
-                    actions: [
-                      TextButton(
-                        child: const Text('Cancel'),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                      ElevatedButton(
-                        child: const Text('Add'),
-                        onPressed: () async {
-                          final newCategory = _controller.text.trim();
-                          if (newCategory.isNotEmpty) {
-                            final prefs = await SharedPreferences.getInstance();
-                            final existing = prefs.getStringList('custom_categories') ?? [];
-                            if (!existing.contains(newCategory)) {
-                              existing.add(newCategory);
-                              await prefs.setStringList('custom_categories', existing);
-                            }
-                            Navigator.of(context).pop();
-                          }
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
+  Widget _buildDonutChart() {
+    final total = categorizedItems.values.fold<int>(0, (sum, list) => sum + list.length);
+    if (total == 0) return const SizedBox();
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: categorizedItems.entries.map((entry) {
-          final category = entry.key;
-          final items = entry.value;
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "🌿 Category Overview",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF2F6650),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Column(
+            children: categorizedItems.entries.map((entry) {
+              final percent = ((entry.value.length / total) * 100).toStringAsFixed(1);
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade100,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.green.shade400),
-                      ),
-                      child: Text(
-                        category,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    if (category.toLowerCase() != 'general')
-                      PopupMenuButton<String>(
-                        icon: const Icon(Icons.more_vert),
-                        onSelected: (String value) async {
-                          final prefs = await SharedPreferences.getInstance();
-                          final customCategories = prefs.getStringList('custom_categories') ?? [];
-
-                          if (value == 'rename') {
-                            final TextEditingController renameController = TextEditingController(text: category);
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('Rename Category'),
-                                content: TextField(
-                                  controller: renameController,
-                                  decoration: const InputDecoration(hintText: 'Enter new category name'),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      final newName = renameController.text.trim();
-                                      if (newName.isNotEmpty && newName != category) {
-                                        final updatedItems = <String>[];
-                                        final allItems = prefs.getStringList('scanned_items') ?? [];
-
-                                        for (final item in allItems) {
-                                          final parts = item.split('|');
-                                          final name = parts[0].trim();
-                                          final cat = parts.length > 1 && parts[1].trim().isNotEmpty ? parts[1].trim() : 'General';
-                                          if (cat == category) {
-                                            updatedItems.add('$name|$newName');
-                                          } else {
-                                            updatedItems.add(item);
-                                          }
-                                        }
-
-                                        await prefs.setStringList('scanned_items', updatedItems);
-
-                                        if (customCategories.contains(category)) {
-                                          customCategories.remove(category);
-                                          customCategories.add(newName);
-                                          await prefs.setStringList('custom_categories', customCategories);
-                                        }
-
-                                        Navigator.of(context).pop();
-                                        _loadCategorizedItems();
-                                      }
-                                    },
-                                    child: const Text('Rename'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else if (value == 'delete') {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('Delete Category'),
-                                content: const Text('Are you sure you want to delete this category and its items?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      final updatedItems = <String>[];
-                                      final allItems = prefs.getStringList('scanned_items') ?? [];
-
-                                      for (final item in allItems) {
-                                        final parts = item.split('|');
-                                        final cat = parts.length > 1 && parts[1].trim().isNotEmpty ? parts[1].trim() : 'General';
-                                        if (cat != category) {
-                                          updatedItems.add(item);
-                                        }
-                                      }
-
-                                      await prefs.setStringList('scanned_items', updatedItems);
-
-                                      if (customCategories.contains(category)) {
-                                        customCategories.remove(category);
-                                        await prefs.setStringList('custom_categories', customCategories);
-                                      }
-
-                                      Navigator.of(context).pop();
-                                      _loadCategorizedItems();
-                                    },
-                                    child: const Text('Delete'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                          const PopupMenuItem<String>(
-                            value: 'rename',
-                            child: Text('Rename'),
-                          ),
-                          const PopupMenuItem<String>(
-                            value: 'delete',
-                            child: Text('Delete'),
-                          ),
-                        ],
-                      ),
+                    Text(entry.key, style: const TextStyle(fontSize: 14, color: Colors.black87)),
+                    Text('$percent%', style: const TextStyle(fontSize: 14, color: Colors.black54)),
                   ],
                 ),
-              ),
-              DragTarget<String>(
-                onAccept: (itemName) {
-                  final fromCategory = categoryFromItem[itemName];
-                  if (fromCategory != null && fromCategory != category) {
-                    setState(() {
-                      _highlightedItems.add(itemName);
-                    });
-                    Future.delayed(const Duration(milliseconds: 600), () {
-                      setState(() {
-                        _highlightedItems.remove(itemName);
-                      });
-                    });
-                    _moveItemToCategory(itemName, fromCategory, category);
-                  }
-                },
-                builder: (context, candidateData, rejectedData) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.green.shade300, width: 2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Wrap(
-                            alignment: WrapAlignment.start,
-                            runAlignment: WrapAlignment.start,
-                            spacing: 5,
-                            runSpacing: 10,
-                            children: [
-                              ...items.map((item) {
-                                return LongPressDraggable<String>(
-                                  data: item,
-                                  feedback: Material(
-                                    child: Container(
-                                      width: 70,
-                                      height: 70,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: Colors.green.shade200,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Text(item, style: const TextStyle(fontSize: 14, color: Colors.white)),
-                                    ),
-                                  ),
-                                  childWhenDragging: Opacity(
-                                    opacity: 0.4,
-                                    child: _buildItemBox(item),
-                                  ),
-                                  child: _buildItemBox(item, highlighted: _highlightedItems.contains(item)),
-                                );
-                              }).toList(),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-            ],
-          );
-        }).toList(),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
-  }
 
-  Future<void> _fetchCarbonFootprint(String itemName) async {
-    try {
-      final uri = Uri.parse('http://172.20.10.3:3000/carbon/footprint?item=${Uri.encodeComponent(itemName)}');
-      final response = await http.get(uri);
- 
-      if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body);
-        final footprint = decoded['carbonFootprint'];
-        debugPrint('🌍 $itemName: $footprint');
-      } else {
-        debugPrint('❌ Failed to fetch carbon footprint for $itemName');
-      }
-    } catch (e) {
-      debugPrint('🚫 Error fetching carbon data for $itemName: $e');
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF4FAF6),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDonutChart(),
+              const SizedBox(height: 24),
+              ...categorizedItems.entries.map((entry) {
+                final category = entry.key;
+                final items = entry.value;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF3E8E65),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFF3E8E65)),
+                        ),
+                        child: Text(
+                          category,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    DragTarget<String>(
+                      onWillAccept: (data) => true,
+                      onAccept: (itemName) {
+                        final fromCategory = categoryFromItem[itemName];
+                        if (fromCategory != null && fromCategory != category) {
+                          _moveItem(itemName, category);
+                        }
+                      },
+                      builder: (context, candidateData, rejectedData) {
+                        return Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: const Color(0xFFB2D8C2)),
+                          ),
+                          child: Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: items.map((item) => _buildDraggableItem(item)).toList(),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                );
+              }).toList(),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: CustomToolbar(
+        context: context,
+        currentIndex: 0,
+      ),
+    );
   }
+}
