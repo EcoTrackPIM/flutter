@@ -1,0 +1,88 @@
+{
+  "" : {
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/record_macos-master.dia",
+    "emit-module-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/record_macos-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/record_macos-master-emit-module.dia",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/record_macos-master.swiftdeps"
+  },
+  "/Users/chkampawlow/.pub-cache/hosted/pub.dev/record_macos-1.0.0/macos/record_macos/Sources/record_macos/InputHelper.swift" : {
+    "const-values" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/InputHelper.swiftconstvalues",
+    "dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/InputHelper.d",
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/InputHelper.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/record_macos.build/Objects-normal/arm64/InputHelper.o",
+    "llvm-bc" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/InputHelper.bc",
+    "object" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/InputHelper.o",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/InputHelper.swiftdeps",
+    "swiftmodule" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/InputHelper~partial.swiftmodule"
+  },
+  "/Users/chkampawlow/.pub-cache/hosted/pub.dev/record_macos-1.0.0/macos/record_macos/Sources/record_macos/RecordConfig.swift" : {
+    "const-values" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordConfig.swiftconstvalues",
+    "dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordConfig.d",
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordConfig.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordConfig.o",
+    "llvm-bc" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordConfig.bc",
+    "object" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordConfig.o",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordConfig.swiftdeps",
+    "swiftmodule" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordConfig~partial.swiftmodule"
+  },
+  "/Users/chkampawlow/.pub-cache/hosted/pub.dev/record_macos-1.0.0/macos/record_macos/Sources/record_macos/RecordMacOsPlugin.swift" : {
+    "const-values" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordMacOsPlugin.swiftconstvalues",
+    "dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordMacOsPlugin.d",
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordMacOsPlugin.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordMacOsPlugin.o",
+    "llvm-bc" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordMacOsPlugin.bc",
+    "object" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordMacOsPlugin.o",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordMacOsPlugin.swiftdeps",
+    "swiftmodule" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecordMacOsPlugin~partial.swiftmodule"
+  },
+  "/Users/chkampawlow/.pub-cache/hosted/pub.dev/record_macos-1.0.0/macos/record_macos/Sources/record_macos/Recorder.swift" : {
+    "const-values" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/Recorder.swiftconstvalues",
+    "dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/Recorder.d",
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/Recorder.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/record_macos.build/Objects-normal/arm64/Recorder.o",
+    "llvm-bc" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/Recorder.bc",
+    "object" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/Recorder.o",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/Recorder.swiftdeps",
+    "swiftmodule" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/Recorder~partial.swiftmodule"
+  },
+  "/Users/chkampawlow/.pub-cache/hosted/pub.dev/record_macos-1.0.0/macos/record_macos/Sources/record_macos/delegate/RecorderDelegateProtocols.swift" : {
+    "const-values" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderDelegateProtocols.swiftconstvalues",
+    "dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderDelegateProtocols.d",
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderDelegateProtocols.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderDelegateProtocols.o",
+    "llvm-bc" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderDelegateProtocols.bc",
+    "object" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderDelegateProtocols.o",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderDelegateProtocols.swiftdeps",
+    "swiftmodule" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderDelegateProtocols~partial.swiftmodule"
+  },
+  "/Users/chkampawlow/.pub-cache/hosted/pub.dev/record_macos-1.0.0/macos/record_macos/Sources/record_macos/delegate/RecorderFileDelegate.swift" : {
+    "const-values" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFileDelegate.swiftconstvalues",
+    "dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFileDelegate.d",
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFileDelegate.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFileDelegate.o",
+    "llvm-bc" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFileDelegate.bc",
+    "object" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFileDelegate.o",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFileDelegate.swiftdeps",
+    "swiftmodule" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFileDelegate~partial.swiftmodule"
+  },
+  "/Users/chkampawlow/.pub-cache/hosted/pub.dev/record_macos-1.0.0/macos/record_macos/Sources/record_macos/delegate/RecorderStreamDelegate.swift" : {
+    "const-values" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderStreamDelegate.swiftconstvalues",
+    "dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderStreamDelegate.d",
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderStreamDelegate.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderStreamDelegate.o",
+    "llvm-bc" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderStreamDelegate.bc",
+    "object" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderStreamDelegate.o",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderStreamDelegate.swiftdeps",
+    "swiftmodule" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderStreamDelegate~partial.swiftmodule"
+  },
+  "/Users/chkampawlow/.pub-cache/hosted/pub.dev/record_macos-1.0.0/macos/record_macos/Sources/record_macos/extension/RecorderFormatExtension.swift" : {
+    "const-values" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFormatExtension.swiftconstvalues",
+    "dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFormatExtension.d",
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFormatExtension.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFormatExtension.o",
+    "llvm-bc" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFormatExtension.bc",
+    "object" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFormatExtension.o",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFormatExtension.swiftdeps",
+    "swiftmodule" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/record_macos.build/Objects-normal/arm64/RecorderFormatExtension~partial.swiftmodule"
+  }
+}

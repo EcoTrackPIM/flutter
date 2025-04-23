@@ -1,0 +1,18 @@
+{
+  "" : {
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/open_file_mac-master.dia",
+    "emit-module-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/open_file_mac-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/open_file_mac-master-emit-module.dia",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/open_file_mac-master.swiftdeps"
+  },
+  "/Users/chkampawlow/.pub-cache/hosted/pub.dev/open_file_mac-1.0.3/macos/Classes/OpenFilePlugin.swift" : {
+    "const-values" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/OpenFilePlugin.swiftconstvalues",
+    "dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/OpenFilePlugin.d",
+    "diagnostics" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/OpenFilePlugin.dia",
+    "index-unit-output-path" : "/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/OpenFilePlugin.o",
+    "llvm-bc" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/OpenFilePlugin.bc",
+    "object" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/OpenFilePlugin.o",
+    "swift-dependencies" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/OpenFilePlugin.swiftdeps",
+    "swiftmodule" : "/Users/chkampawlow/Documents/Eco_Track/build/macos/Build/Intermediates.noindex/Pods.build/Debug/open_file_mac.build/Objects-normal/arm64/OpenFilePlugin~partial.swiftmodule"
+  }
+}

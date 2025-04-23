@@ -1,0 +1,648 @@
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import '../Api/tagscanner.dart';
+
+class TagScannerScreen extends StatefulWidget {
+  const TagScannerScreen({super.key});
+
+  @override
+  _TagScannerScreenState createState() => _TagScannerScreenState();
+}
+
+class _TagScannerScreenState extends State<TagScannerScreen> {
+  File? _selectedImage;
+  bool _isLoading = false;
+  Map<String, dynamic>? _results;
+  String? _errorMessage;
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+        _isLoading = true;
+        _errorMessage = null;
+        _results = null;
+      });
+
+      try {
+        final response = await tagApi.scanTag(_selectedImage!);
+
+        if (response['success'] == true) {
+          setState(() {
+            _results = {
+              'original_text': response['data']['original_text'],
+              'brands': response['data']['matched_brands'],
+              'percentages': response['data']['percentages'],
+              'all_text': response['data']['all_text'],
+            };
+            _isLoading = false;
+          });
+        } else {
+          setState(() {
+            _isLoading = false;
+            _errorMessage = response['message'] ?? 'Failed to scan tag';
+          });
+        }
+      } catch (e) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = 'Error: ${e.toString()}';
+        });
+      }
+    }
+  }
+
+  Future<void> _showImageSourceDialog(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Color(0xFF8BC34A),
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Select Image Source",
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _ImageSourceButton(
+                  icon: Icons.camera_alt_rounded,
+                  label: "Camera",
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera);
+                  },
+                  color: Color(0xFF00BF63),
+                ),
+                _ImageSourceButton(
+                  icon: Icons.photo_library_rounded,
+                  label: "Gallery",
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery);
+                  },
+                  color: Colors.blue,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: Colors.grey.shade600),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          'Tag Scanner',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_rounded, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              children: [
+                const SizedBox(height: 24),
+                _HeaderSection(),
+                const SizedBox(height: 32),
+                _ScanSection(
+                  isLoading: _isLoading,
+                  errorMessage: _errorMessage,
+                  onTap: () => _showImageSourceDialog(context),
+                  selectedImage: _selectedImage,
+                  results: _results,
+                ),
+                if (_selectedImage == null) ...[
+                  const SizedBox(height: 40),
+                  _HowItWorksSection(),
+                  const SizedBox(height: 40),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ImageSourceButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color color;
+
+  const _ImageSourceButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 120,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HeaderSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Image.asset(
+          'assets/tag.png',
+          height: 100,
+          width:100,
+          fit: BoxFit.contain,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          "Scan clothing tags for fabric information",
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1B5E20),
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          "Get detailed composition analysis from clothing tags",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey.shade600,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+class _ScanSection extends StatelessWidget {
+  final bool isLoading;
+  final String? errorMessage;
+  final VoidCallback onTap;
+  final File? selectedImage;
+  final Map<String, dynamic>? results;
+
+  const _ScanSection({
+    required this.isLoading,
+    required this.errorMessage,
+    required this.onTap,
+    this.selectedImage,
+    this.results,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (selectedImage != null) {
+      return _buildResultsView(context);
+    }
+
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: isLoading ? null : onTap,
+          child: Container(
+            height: 180,
+            width: 180,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: isLoading
+                ? Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF8BC34A),
+              ),
+            )
+                : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.camera_alt_rounded,
+                  size: 48,
+                  color:  Color(0xFF1B5E20),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Scan Clothing Tag",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color:  Color(0xFF1B5E20),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (errorMessage != null) ...[
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.red.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline_rounded, color: Colors.red.shade600),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    errorMessage!,
+                    style: TextStyle(color: Colors.red.shade600),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: isLoading ? null : onTap,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF8BC34A),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+            ),
+            child: isLoading
+                ? SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            )
+                : Text(
+              "Start Scan",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResultsView(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          height: 250,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 12,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.file(
+              selectedImage!,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        const SizedBox(height: 24),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 12,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Analysis Results',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF8BC34A),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildResultItem('Extracted Text:', Icons.text_fields),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 32.0, bottom: 16),
+                child: Text(
+                  results?['original_text'] ?? 'No text extracted',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              if (results?['brands'] != null &&
+                  (results!['brands'] as List).isNotEmpty) ...[
+                _buildResultItem('Matched Brands:', Icons.sell),
+                const SizedBox(height: 8),
+                Column(
+                  children: (results!['brands'] as List)
+                      .map<Widget>((brand) => Padding(
+                    padding:
+                    const EdgeInsets.only(left: 32.0, bottom: 8),
+                    child: Text(
+                      '- $brand',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ))
+                      .toList(),
+                ),
+                const SizedBox(height: 16),
+              ],
+              if (results?['percentages'] != null &&
+                  (results!['percentages'] as Map).isNotEmpty) ...[
+                _buildResultItem('Material Composition:', Icons.percent),
+                const SizedBox(height: 8),
+                Column(
+                  children: (results!['percentages'] as Map<String, dynamic>)
+                      .entries
+                      .map<Widget>((entry) => Padding(
+                    padding:
+                    const EdgeInsets.only(left: 32.0, bottom: 8),
+                    child: Row(
+                      children: [
+                        Text(
+                          '${entry.key}: ',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '${entry.value.toStringAsFixed(2)}%',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ))
+                      .toList(),
+                ),
+              ],
+              const SizedBox(height: 16),
+              _buildResultItem('Full Analysis:', Icons.analytics),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 32.0),
+                child: Text(
+                  results?['all_text'] ?? 'No detailed analysis available',
+                  style: TextStyle(fontSize: 14, color: Colors.black54),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TagScannerScreen(),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF8BC34A),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+            ),
+            child: Text(
+              "Scan Again",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResultItem(String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, color: Color(0xFF8BC34A), size: 24),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HowItWorksSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "How it works:",
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1B5E20),
+          ),
+        ),
+        const SizedBox(height: 16),
+        _StepItem(
+          number: 1,
+          title: "Take a photo",
+          description: "Capture the clothing tag or choose from gallery",
+        ),
+        _StepItem(
+          number: 2,
+          title: "Text extraction",
+          description: "Our system extracts text from the tag",
+        ),
+        _StepItem(
+          number: 3,
+          title: "Material analysis",
+          description: "We analyze the fabric composition",
+        ),
+        _StepItem(
+          number: 4,
+          title: "Brand matching",
+          description: "We identify matching brands if available",
+        ),
+      ],
+    );
+  }
+}
+
+class _StepItem extends StatelessWidget {
+  final int number;
+  final String title;
+  final String description;
+
+  const _StepItem({
+    required this.number,
+    required this.title,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Color(0xFF9CC824),
+              shape: BoxShape.circle,
+            ),
+            child: Text(
+              number.toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+                Text(
+                  description,
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+//changedddd

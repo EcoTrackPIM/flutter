@@ -1,4 +1,4 @@
-# ecotrack_front
+# flutter_eco_track
 
 A new Flutter project.
 

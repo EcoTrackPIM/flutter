@@ -1,37 +1,76 @@
-import 'package:ecotrack_front/screens/home.dart';
 import 'package:flutter/material.dart';
+
+import 'Screens/HomeScreen.dart';
+import 'Screens/splashScreen.dart';
+import 'dart:io'; // Add this
+import 'package:image_picker/image_picker.dart';
+import '../Screens/LoginScreen.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+
+
+
+
+import 'bgService/background_service.dart';
+import 'bgService/permission_handler.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
+// void main() async {
+//     //final FlutterSecureStorage _storage = const FlutterSecureStorage();
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await BackgroundServiceManager.initializeService();
+//   //final rememberMe = await _storage.read(key: "rememberMe");
+//   //final token = await _storage.read(key: "token");
+  
+  
+  
+//   //if (rememberMe == 'true' && token != null && await AppPermissions.hasRequiredPermissions()) {
+//     await BackgroundServiceManager.startService();
+//   //}
+  
+//   runApp(
+//     ChangeNotifierProvider(
+//       create: (context) => AppState(),
+//       child: const MyApp(),
+//     ),
+//   );
+// }
+
+class AppState with ChangeNotifier {
+  bool _isTracking = false;
+
+  bool get isTracking => _isTracking;
+
+  Future<void> startTracking() async {
+    if (await AppPermissions.requestLocationPermissions()) {
+      await BackgroundServiceManager.startService();
+      _isTracking = true;
+      notifyListeners();
+    }
+  }
+
+  Future<void> stopTracking() async {
+    await BackgroundServiceManager.stopService();
+    _isTracking = false;
+    notifyListeners();
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'ECO Track',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primarySwatch: Colors.green,
       ),
-      home: HomePage(),
+      home: const SplashScreen(),
     );
   }
 }
@@ -105,7 +144,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
+            const Text(
+              'You have pushed the button this many times:',
+            ),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
