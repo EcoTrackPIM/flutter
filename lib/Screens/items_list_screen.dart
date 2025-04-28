@@ -7,13 +7,13 @@ import 'dart:convert';
 import 'CarbonFootprintScreen.dart';
 
 class ItemsListScreen extends StatefulWidget {
-  const ItemsListScreen({Key? key}) : super(key: key);
+  const ItemsListScreen({super.key});
 
   @override
   State<ItemsListScreen> createState() => _ItemsListScreenState();
 }
 
-class _ItemsListScreenState extends State<ItemsListScreen> {
+class _ItemsListScreenState extends State<ItemsListScreen> with RouteAware  {
   Map<String, List<String>> categorizedItems = {};
   Map<String, String> categoryFromItem = {};
   final Map<String, String> _carbonFootprints = {};
@@ -94,36 +94,47 @@ void _addManualItems() async {
 
   debugPrint('✅ Manually added items to storage');
 }
-  Future<void> _loadCategorizedItems() async {
-  final prefs = await SharedPreferences.getInstance();
-  final items = prefs.getStringList('scanned_items') ?? [];
-  final customCategories = prefs.getStringList('custom_categories') ?? [];
+Future<void> _loadCategorizedItems() async {
+  print('🔵 Trying to fetch items from server...');
+  final url = Uri.parse('http://192.168.1.128:3000/items');
+  print('🔵 Target URL: $url');
 
-  // 🔍 PRINT the raw stored items in terminal
-  print("📦 Loaded scanned_items from SharedPreferences:");
-  for (var item in items) {
-    print("- $item");
-  }
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Connection': 'close', // Optional but helps
+      },
+    );
 
-  Map<String, List<String>> tempMap = {};
+    print('🟢 Server responded with status code: ${response.statusCode}');
 
-  for (var item in items) {
-    final parts = item.split('|');
-    final name = parts[0].trim();
-    final category = parts.length > 1 && parts[1].trim().isNotEmpty ? parts[1].trim() : 'General';
+    if (response.statusCode == 200) {
+      final List<dynamic> items = json.decode(response.body);
+      print('🟢 Server returned ${items.length} items');
 
-    if (!tempMap.containsKey(category)) {
-      tempMap[category] = [];
+      Map<String, List<String>> tempMap = {};
+
+      for (var item in items) {
+        final name = item['name'];
+        final category = item['category'] ?? 'General';
+        print('✅ Processing item: $name, category: $category');
+
+        if (!tempMap.containsKey(category)) {
+          tempMap[category] = [];
+        }
+        tempMap[category]!.add(name);
+        categoryFromItem[name] = category;
+      }
+
+      setState(() => categorizedItems = tempMap);
+      print('✅ Updated UI with fetched items.');
+    } else {
+      print('❌ Failed to fetch items. Status Code: ${response.statusCode}');
     }
-    tempMap[category]!.add(name);
-    categoryFromItem[name] = category;
+  } catch (e) {
+    print('❌ Exception occurred while fetching items: $e');
   }
-
-  for (var category in customCategories) {
-    tempMap.putIfAbsent(category, () => []);
-  }
-
-  setState(() => categorizedItems = tempMap);
 }
 
 
@@ -192,24 +203,17 @@ void _addManualItems() async {
       onTap: () async {
         final footprintText = _carbonFootprints[itemName] ?? '0';
         final footprintValue = double.tryParse(footprintText.split(' ').first) ?? 0;
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CarbonFootprintScreen(itemName: itemName),
-          ),
-        );
+        await Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => CarbonFootprintScreen(itemName: itemName),
+  ),
+);
 
-        if (mounted && result == true) {
-          setState(() {
-            _loadCategorizedItems();
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Changes applied"),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
+// ⚡ After returning from the item screen, always refresh!
+if (mounted) {
+  _loadCategorizedItems();
+}
       },
       child: Container(
         width: 60,
@@ -325,11 +329,11 @@ void _addManualItems() async {
                       ),
                     ),
                     DragTarget<String>(
-                      onWillAccept: (data) => true,
-                      onAccept: (itemName) {
+                      onWillAcceptWithDetails: (data) => true,
+                      onAcceptWithDetails: (itemName) {
                         final fromCategory = categoryFromItem[itemName];
                         if (fromCategory != null && fromCategory != category) {
-                          _moveItem(itemName, category);
+                          _moveItem(itemName as String, category);
                         }
                       },
                       builder: (context, candidateData, rejectedData) {
@@ -351,7 +355,7 @@ void _addManualItems() async {
                     const SizedBox(height: 20),
                   ],
                 );
-              }).toList(),
+              }),
             ],
           ),
         ),
