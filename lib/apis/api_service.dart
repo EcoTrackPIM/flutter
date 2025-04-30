@@ -8,7 +8,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 // API Service class
 class ApiService {
-  final String baseUrl = "http://192.168.1.23:3000"; // Replace with your API base URL
+  final String baseUrl = "http://192.168.100.17:3000"; // Replace with your API base URL
 
   String? _token; // Store your bearer token
 

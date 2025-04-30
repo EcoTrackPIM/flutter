@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		b0Tk0QNtvDFIiHDqO9DI2DPECOU=
+		4rTDlx7q6iTYWXy4AeXHwhPU/MY=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		CKIVAKmY8VPHk2OBaF+OusZ+RQA=
+		+t2HXREKttq03FuSA9t8DqyCI0A=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -34,7 +34,7 @@
 		</data>
 		<key>flutter_assets/assets/Dress.png</key>
 		<data>
-		9c/xqnuWXIyTPFBXl8lHRF1flQA=
+		tNIjwny5JK0LWlauZ2nLUEpf6xM=
 		</data>
 		<key>flutter_assets/assets/Hanger_icon.png</key>
 		<data>
@@ -42,35 +42,35 @@
 		</data>
 		<key>flutter_assets/assets/Jacket.png</key>
 		<data>
-		oaQ0xcwhthWLqZWtlnY5s5OYd6g=
+		aXzLxL0kBwOMCo9QLdYKNwsKUmU=
 		</data>
 		<key>flutter_assets/assets/Jeans.png</key>
 		<data>
-		tadRaO7VF7plRfU1flldV0ZoX6w=
+		iG7fVSeZaxSXEeMmJCCORAzU3Z0=
 		</data>
 		<key>flutter_assets/assets/Pullover.png</key>
 		<data>
-		feYiAloH9me9ZsJmd09F4l5pEx0=
+		fusNe226sV+eJgSJtlBbOR8uIrA=
 		</data>
 		<key>flutter_assets/assets/Shirt.png</key>
 		<data>
-		BPMJmYPFgio5hjYvUkKa3ms93aA=
+		mMnZpS8SQURr0DWuJUFAFvk3o50=
 		</data>
 		<key>flutter_assets/assets/Shorts.png</key>
 		<data>
-		nGqc2Es5WlGs5AcgYpqqU1RLEH8=
+		FaLRU7+FpgMy5SOwCeccgzj/j7w=
 		</data>
 		<key>flutter_assets/assets/Skirt.png</key>
 		<data>
-		giBm5hASB4/QtXCFRn0l04ptTmU=
+		3VKnHYbpQmSwtk3moZI3setvzhI=
 		</data>
 		<key>flutter_assets/assets/Sweater.png</key>
 		<data>
-		rocxjRsus5GbrAvPqi4B9Co1FMc=
+		pEQZtUEyKMc5iaEHJDzh4jbOPQU=
 		</data>
 		<key>flutter_assets/assets/Tshirt.png</key>
 		<data>
-		cE8+4+wiHsmIO4RoRC7D1IVCYBk=
+		KJZtuk/JJ5cNyJrcxnuhEZBgdaE=
 		</data>
 		<key>flutter_assets/assets/background.jpg</key>
 		<data>
@@ -84,13 +84,25 @@
 		<data>
 		PoZ8uwjcpE0uAhCPl+zExAe4msM=
 		</data>
+		<key>flutter_assets/assets/cookie_image.png</key>
+		<data>
+		U63zXx7VOO0ZNBVXoa8JXR958X4=
+		</data>
+		<key>flutter_assets/assets/cookies.png</key>
+		<data>
+		Xneq9vWeUoxW3LGSmXhWg3Bd6Lw=
+		</data>
 		<key>flutter_assets/assets/eco.png</key>
 		<data>
-		3ypqRgOEO3cxjW0SReKYxB7o3RM=
+		07APDml8HDtDPeHUazVAsEtrlnc=
 		</data>
 		<key>flutter_assets/assets/eco_friendly_scan.png</key>
 		<data>
 		4VAe3u8bRgczB/YvhKp6PbZn/T8=
+		</data>
+		<key>flutter_assets/assets/empty.png</key>
+		<data>
+		tAjMtgzjlirmf4JiUEC17IPVof4=
 		</data>
 		<key>flutter_assets/assets/energy.png</key>
 		<data>
@@ -194,7 +206,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		NjVDUglGeXx6BekU/WIBuiUugqQ=
+		+vKz2pfvBvaFE9cG3I9Zc6SSLew=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -315,14 +327,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			QgN8B85nvfLpRrcWikmtR+fJeToOcfK1Wv6AorUH1g4=
+			eQanbfOhnjEVvhUd8x0yBgcLMZXzy3aE7Hp4MWUCUPg=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Q7Z/lh0CFDs+fy76T+xUmxHmkKRmLb/FvT4O3yNYod4=
+			xVpJGTy7/2ReFPLwzycQdymwwz3zh2LUjadmCokheAQ=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -357,7 +369,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			wIVzuhvN/k1nbTh2cEAub+0vkCCJSVnBgRkAHCjmr0M=
+			INe3hHHXkoLZmXey+SWFiRKs++vkh5fwATDnhE7+Tuc=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Hanger_icon.png</key>
@@ -371,56 +383,56 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			/rkz2Vdl4P7Mb5fVoIux+TpSStQN7ssY8FFhovcuGg4=
+			2RZvnpY4DUI0snH527KJMhFBFUwP9KO0pHw1ZoN1muA=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Jeans.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			d9+xnt180ZeJH17Ph9C32GP2MPM/OiioqSuO4kAolZo=
+			1Yr7rdgmqIqNF/IBg2w27rlosJvV2VJrMlJCrHoY+1A=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Pullover.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			J1HO+yU+nm1D6wLRcoploQONiv+M9kUVDyz4SgbiDPg=
+			E7uH7kSioE+OI2IUv2tTCsYcRq7hO6rpXRx1IT3aulY=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Shirt.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			oWhikbOFsJ+BwhJxPwklYL4An5oE5cIkU+CgGlOZ0gg=
+			YpIUuQ4u1Tuxz2JSbE4T2nwlFEOIRGljc+uM2YyPKWA=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Shorts.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			3iOnYUzKU5HWwgN9N87NUhy4RUOsVFn4qhuMOTHjwvY=
+			jDcRoUz8EzJBpc87IkBda41CeABxta2wyWdx9ieJioU=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Skirt.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			RR2buuzXNNo+ImrqHKyfmyeZQ+ZEybZAd+87/wYxsoE=
+			XFc/lfp42X8ZhvzUve0UdO90FHR01j3vSj3gZNgPHtw=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Sweater.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			f6/YQQ+i8p3XGjb+wDclYh5+FlwlE5hitPRXCiDHql4=
+			Np5N5T/I/F5vCaAaFjwX4fkv1W5IU4K9JuWEKqkRCy8=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/Tshirt.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			eFkh6P9+mcl4+X8WW7wBIL4wHN1btrnxU+2Ox89JUzc=
+			M34IitF6jJ7hssTn8w3UQ+6MXrNB5+Vsoh/1cp/w/Rc=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/background.jpg</key>
@@ -444,11 +456,25 @@
 			XHfC8Zxp7fBrRlGm4b8DmlC0ywGs12sJx9+x9CJ+slo=
 			</data>
 		</dict>
+		<key>flutter_assets/assets/cookie_image.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			D+L1Wz6IHK08FL/3La/V9+Ap1FRb7SiELsNTfjyaGtc=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/cookies.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			s+oS1npvUPEQ6GCeumAGgNTBiD96LlGKwWgmX35ZVC8=
+			</data>
+		</dict>
 		<key>flutter_assets/assets/eco.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			xousOTnmhI1CIoe/g5L+5+PQdxQ3fTJBsB2lzk1NXT0=
+			CzCMxrM+Jgp3VmTsl5J4slxXehnhgmTXDELF0zFPXkE=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/eco_friendly_scan.png</key>
@@ -456,6 +482,13 @@
 			<key>hash2</key>
 			<data>
 			tddxTfNJV026GYws5WfVYW8FM2AJQaH34cfAn54C5c4=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/empty.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			XO8BNu+YEaKeaan9MWuyR1vEc5Ii3CJwE9AO9udb1es=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/energy.png</key>
@@ -637,7 +670,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			okAE9UCPYu3F5E7Ynqm6HBKkEvrNlA0VXFOaEWLNbro=
+			Bbi0J3bG9u6nIMXQMPrfVolcdnte9HLVVdcAYJSZucI=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>

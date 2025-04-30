@@ -22,14 +22,14 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
       description: "Track and optimize your transportation emissions with AI-powered insights\n\n"
           "• Real-time CO₂ calculations for all transport modes\n",
       imagePath: "assets/transport222.jpg",
-      color: Color(0xFFB9DB7E),
+      color: Color(0xFF4D8B6F),
     ),
     OnboardingPage(
       title: " Sustainable Fashion Advisor",
       description: "Transform your wardrobe with ethical fashion intelligence\n\n"
           "• Scan clothes to check carbon footprint\n",
       imagePath: "assets/Clothes.png",
-      color: Color(0xFFB9DB7E),
+      color: Color(0xFF4D8B6F),
     ),
     OnboardingPage(
       title: " Nutritional Carbon Analyst",
@@ -37,7 +37,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
           "• Food production lifecycle analysis\n"
           "Plant-based diets can reduce food emissions by up to 73%",
       imagePath: "assets/food222.jpg",
-      color: Color(0xFFB9DB7E),
+      color: Color(0xFF4D8B6F),
     ),
     OnboardingPage(
       title: " Energy Optimization Suite",
@@ -45,7 +45,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
           "• Renewable energy transition roadmap\n"
           "Homes using our system save 2.4 tons CO₂ annually on average",
       imagePath: "assets/energy222.jpg",
-      color: Color(0xFFB5E48C),
+      color: Color(0xFF4D8B6F),
     ),
   ];
 
@@ -226,7 +226,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
               color: _currentPage == index
-                  ? Color(0xFFB9DB7E)
+                  ? Color(0xFF4D8B6F)
                   : Colors.grey[300]!.withOpacity(0.5),
             ),
           );
@@ -241,7 +241,7 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
       width: _currentPage == _pages.length - 2 ? 130 : 110,
       child: Material(
         borderRadius: BorderRadius.circular(25),
-        color: Color(0xFFB9DB7E),
+        color: Color(0xFF4D8B6F),
         child: InkWell(
           borderRadius: BorderRadius.circular(25),
           onTap: () {
@@ -289,12 +289,12 @@ class _OnboardingScreensState extends State<OnboardingScreens> {
         child: ElevatedButton(
           onPressed: _completeOnboarding,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Color(0xFFB9DB7E),
+            backgroundColor: Color(0xFF4D8B6F),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25)),
             padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
             elevation: 4,
-            shadowColor: Color(0xFFB9DB7E).withOpacity(0.3),
+            shadowColor: Color(0xFF4D8B6F).withOpacity(0.3),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

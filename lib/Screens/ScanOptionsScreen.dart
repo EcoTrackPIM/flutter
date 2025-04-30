@@ -11,7 +11,7 @@ class ScanOptionsScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text('Scan Options', style: TextStyle(color: Colors.black87)),
-        backgroundColor: Color(0xFF9CC824),
+        backgroundColor: Color(0xFF4D8B6F),
         elevation: 0,
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.black87),
@@ -36,7 +36,7 @@ class ScanOptionsScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1B5E20),
+                  color: Color(0xFF4D8B6F),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -56,15 +56,13 @@ class ScanOptionsScreen extends StatelessWidget {
                 title: "Eco Fashion Scan",
                 subtitle: "Sustainability Analysis",
                 description: "Get insights about your outfit's environmental impact",
-                color: Color(0xFF9CC824),
+                color: Color(0xFF4D8B6F),
                 gradient: LinearGradient(
-                  colors: [Color(0xFF9CC824), Color(0xFF6AB4E1)],
+                  colors: [Color(0xFF4D8B6F), Color(0xFF6AB4E1)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                titleColor: Color(0xFF1B5E20),
-
-                // Added olive green for title
+                titleColor: Colors.black, // Updated to black
                 destination: EcoFriendlyFashionScanScreen(),
               ),
               SizedBox(height: 10),
@@ -74,14 +72,13 @@ class ScanOptionsScreen extends StatelessWidget {
                 title: "Tag Scanner",
                 subtitle: "Fabric Composition",
                 description: "Scan clothing tags to analyze material composition",
-                color: Color(0xFF9CC824),
+                color: Color(0xFF4D8B6F),
                 gradient: LinearGradient(
-                  colors: [Color(0xFF9CC824), Color(0xFF6AB4E1)],
+                  colors: [Color(0xFF4D8B6F), Color(0xFF6AB4E1)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                titleColor: Color(0xFF1B5E20),
-                // Added olive green for title
+                titleColor: Colors.black, // Updated to black
                 destination: TagScannerScreen(),
               ),
               SizedBox(height: 15),
@@ -92,7 +89,6 @@ class ScanOptionsScreen extends StatelessWidget {
     );
   }
 
-// Updated _buildModernOptionCard with titleColor parameter
   Widget _buildModernOptionCard({
     required BuildContext context,
     required IconData icon,
@@ -101,7 +97,7 @@ class ScanOptionsScreen extends StatelessWidget {
     required String description,
     required Color color,
     required Gradient gradient,
-    required Color titleColor, // New parameter
+    required Color titleColor,
     required Widget destination,
   }) {
     return GestureDetector(
@@ -134,7 +130,7 @@ class ScanOptionsScreen extends StatelessWidget {
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, size: 28, color: Color(0xFF1B5E20)),
+                  child: Icon(icon, size: 28, color: Color(0xFF4D8B6F)),
                 ),
                 SizedBox(height: 20),
                 Text(
@@ -142,7 +138,7 @@ class ScanOptionsScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: titleColor, // Using the olive green here
+                    color: titleColor, // black now
                   ),
                 ),
                 SizedBox(height: 4),
@@ -170,7 +166,7 @@ class ScanOptionsScreen extends StatelessWidget {
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.arrow_forward, color: Color(0xFF1B5E20)),
+                    child: Icon(Icons.arrow_forward, color: Color(0xFF4D8B6F)),
                   ),
                 ),
               ],
@@ -181,5 +177,3 @@ class ScanOptionsScreen extends StatelessWidget {
     );
   }
 }
-
-//changed

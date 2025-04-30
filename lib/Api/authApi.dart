@@ -7,9 +7,18 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 
+
 class ApiService {
-  final String baseUrl = "http://192.168.1.23:3000";
+  final String baseUrl = "http://192.168.1.122:3000";
   final FlutterSecureStorage storage = const FlutterSecureStorage();
+  String? _extractScanId(Map<String, dynamic> response) {
+    return response['id']?.toString() ??
+        response['_id']?.toString() ??
+        response['scanId']?.toString();
+  }
+
+
+
 
   Future<Map<String, dynamic>> registerUser({
     required String name,
@@ -53,6 +62,90 @@ class ApiService {
   }
 
 
+
+  Future<Map<String, dynamic>> saveScan({
+    required File imageFile,
+    required String outfitType,
+    required double carbonFootprint,
+    required String fabric,
+  }) async {
+    final token = await storage.read(key: "token");
+    final userId = await storage.read(key: "userId");
+
+    if (token == null || userId == null) {
+      throw Exception('User not authenticated');
+    }
+
+    final url = Uri.parse('$baseUrl/upload');
+    final request = http.MultipartRequest('POST', url)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..files.add(await http.MultipartFile.fromPath(
+        'image',
+        imageFile.path,
+        contentType: MediaType('image', 'jpeg'),
+      ))
+      ..fields.addAll({
+        'user_id': userId,
+        'outfit_type': outfitType,
+        'carbon_footprint': carbonFootprint.toString(),
+        'fabric': fabric,
+      });
+
+    try {
+      final response = await request.send();
+      final responseBody = await response.stream.bytesToString();
+      final responseData = jsonDecode(responseBody);
+
+      return {
+        ...responseData,
+        'scanId': _extractScanId(responseData), // Now using the helper method
+      };
+    } catch (e) {
+      throw Exception('Scan upload error: $e');
+    }
+  }
+  Future<Map<String, dynamic>> getEcoProgress(String userId) async {
+    final response = await http.get(Uri.parse('$baseUrl/upload/eco-progress/$userId'));
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load eco progress');
+    }
+  }
+
+
+
+  Future<List<dynamic>> getUserScans() async {
+    final token = await storage.read(key: "token");
+    final userId = await storage.read(key: "userId");
+
+    if (token == null || userId == null) {
+      throw Exception('User not authenticated');
+    }
+
+    final url = Uri.parse('$baseUrl/users/$userId/scans');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to fetch scans: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching scans: $e');
+    }
+  }
+
+
   Future<Map<String, dynamic>> uploadProfileImage(File imageFile) async {
     final token = await storage.read(key: "token");
     if (token == null) throw Exception('No authentication token found');
@@ -89,8 +182,42 @@ class ApiService {
       throw Exception('Image upload error: $e');
     }
   }
+// Add this method to your ApiService class
+  Future<Map<String, dynamic>> updateCarbonFootprint({
+    required String uploadId,
+    required double carbonFootprint,
+  }) async {
+    final token = await storage.read(key: "token");
+    final userId = await storage.read(key: "userId");
 
+    if (token == null || userId == null) {
+      throw Exception('Authentication required');
+    }
 
+    final url = Uri.parse('$baseUrl/upload/$uploadId/carbon-footprint');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'carbonFootprint': carbonFootprint,
+          'userId': userId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Update failed: ${response.body}');
+      }
+    } catch (e) {
+      throw Exception('Update error: $e');
+    }
+  }
   Future<Map<String, dynamic>> updateProfile({
     String? name,
     String? phoneNumber,
@@ -295,6 +422,7 @@ class ApiService {
     return await storage.read(key: "userId");
   }
 
+
   Future<String?> getUserName() async {
     return await storage.read(key: "userName") ?? 'User';
   }
@@ -347,4 +475,5 @@ class ApiService {
       throw Exception('Error during password reset: $e');
     }
   }
+
 }

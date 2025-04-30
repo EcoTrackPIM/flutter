@@ -3,7 +3,7 @@ import 'package:flutter_eco_track/Screens/MainScreen.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Api/authApi.dart';
-import 'homeScreen.dart';
+import 'HomeScreen.dart';
 import 'forgetPassword.dart';
 import 'signUpScreen.dart';
 import 'OnboardingScreens.dart';
@@ -48,9 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => MainScreen(), // Always show onboarding
-          ),
+          MaterialPageRoute(builder: (context) => MainScreen()),
         );
       } else {
         setState(() {
@@ -73,104 +71,114 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
+          // Background image
           Positioned.fill(
             child: Image.asset(
               "assets/background.jpg",
               fit: BoxFit.cover,
             ),
           ),
-          Column(
-            children: [
-              const SizedBox(height: 60),
-
-              const SizedBox(height: 20),
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border(
-                        top: BorderSide(
-                          color: Color(0xFFB9DB7E),
-                          width: 4,
-                        ),
-                      ),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Image.asset("assets/logo.png", width: 150, height: 150),
-                          const SizedBox(height: 5),
-                          Text(
-                            "Welcome Back!",
-                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-                          ),
-                          const SizedBox(height: 5),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(builder: (context) => SignUpScreen()),
-                              );
-                            },
-                            child: RichText(
-                              text: TextSpan(
-                                text: "Don't have an account? ",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text: "Sign up",
-                                    style: TextStyle(
-                                      color: Colors.green,
-                                      fontSize: 14,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 30),
-                          buildTextField("Your Email Address", _emailController),
-                          const SizedBox(height: 20),
-                          buildPasswordField(),
-                          const SizedBox(height: 10),
-                          buildRememberMeCheckbox(),
-                          if (_errorMessage != null)
-                            Text(
-                              _errorMessage!,
-                              style: TextStyle(color: Colors.red, fontSize: 14),
-                            ),
-                          const SizedBox(height: 20),
-                          buildLoginButton(context),
-                          const SizedBox(height: 10),
-                          buildForgotPasswordText(context),
-                          const SizedBox(height: 20),
-                          buildDivider(),
-                          const SizedBox(height: 20),
-                          buildSocialButtons(),
-                        ],
-                      ),
-                    ),
+          // Scrollable content
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 80),
+                // Logo
+                Center(
+                  child: Image.asset(
+                    "assets/whiteLOGO.png",
+                    width: 120,
+                    height: 120,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                // White container
+                Container(
+                  width: double.infinity,
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height * 0.58, // Decreased height
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40),
+                    ),
+                    border: Border(
+                      top: BorderSide(
+                        color: Color(0xFFB9DB7E),
+                        width: 3, // 3px green solid top border
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 10),
+                      const Text(
+                        "Welcome Back!",
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => SignUpScreen()),
+                          );
+                        },
+                        child: RichText(
+                          text: const TextSpan(
+                            text: "Don't have an account? ",
+                            style: TextStyle(color: Colors.black, fontSize: 14),
+                            children: [
+                              TextSpan(
+                                text: "Sign up",
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 14,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      buildTextField("Your Email Address", _emailController),
+                      const SizedBox(height: 15),
+                      buildPasswordField(),
+                      const SizedBox(height: 10),
+                      buildRememberMeCheckbox(),
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            _errorMessage!,
+                            style: const TextStyle(color: Colors.red, fontSize: 14),
+                          ),
+                        ),
+                      const SizedBox(height: 15),
+                      buildLoginButton(),
+                      const SizedBox(height: 10),
+                      buildForgotPasswordText(),
+                      const SizedBox(height: 20),
+                      buildDivider(),
+                      const SizedBox(height: 20),
+                      buildSocialButtons(),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           if (_isLoading)
             Positioned.fill(
               child: Container(
                 color: Colors.black.withOpacity(0.3),
-                child: Center(child: CircularProgressIndicator()),
+                child: const Center(child: CircularProgressIndicator()),
               ),
             ),
         ],
@@ -188,16 +196,13 @@ class _LoginScreenState extends State<LoginScreen> {
               _rememberMe = value!;
             });
           },
-          activeColor: Color(0xFF0B6E4F),
+          activeColor: const Color(0xFF0B6E4F),
         ),
-        Text(
+        const Text(
           "Remember Me",
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.black,
-          ),
+          style: TextStyle(fontSize: 14, color: Colors.black),
         ),
-        Spacer(),
+        const Spacer(),
       ],
     );
   }
@@ -206,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
+        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
         const SizedBox(height: 5),
         TextField(
           controller: controller,
@@ -223,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Password", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
+        const Text("Password", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
         const SizedBox(height: 5),
         TextField(
           controller: _passwordController,
@@ -240,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget buildLoginButton(BuildContext context) {
+  Widget buildLoginButton() {
     return SizedBox(
       width: 250,
       height: 50,
@@ -253,11 +258,10 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         child: Ink(
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [Color(0xFF0B6E4F), Color(0xFF80C783)]),
+            gradient: const LinearGradient(colors: [Color(0xFF0B6E4F), Color(0xFF80C783)]),
             borderRadius: BorderRadius.circular(30),
           ),
-          child: Container(
-            alignment: Alignment.center,
+          child: const Center(
             child: Text(
               "Log In",
               style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
@@ -268,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget buildForgotPasswordText(BuildContext context) {
+  Widget buildForgotPasswordText() {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -276,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
         );
       },
-      child: Text(
+      child: const Text(
         "Forgot Password?",
         style: TextStyle(
           color: Colors.blueAccent,
@@ -291,12 +295,12 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget buildDivider() {
     return Row(
       children: [
-        Expanded(child: Divider(color: Colors.grey, thickness: 1)),
-        Padding(
+        const Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+        const Padding(
           padding: EdgeInsets.symmetric(horizontal: 10),
           child: Text("or", style: TextStyle(color: Colors.grey)),
         ),
-        Expanded(child: Divider(color: Colors.grey, thickness: 1)),
+        const Expanded(child: Divider(color: Colors.grey, thickness: 1)),
       ],
     );
   }

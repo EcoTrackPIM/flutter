@@ -7,13 +7,13 @@ import 'dart:convert';
 import 'CarbonFootprintScreen.dart';
 
 class ItemsListScreen extends StatefulWidget {
-  const ItemsListScreen({Key? key}) : super(key: key);
+  const ItemsListScreen({super.key});
 
   @override
   State<ItemsListScreen> createState() => _ItemsListScreenState();
 }
 
-class _ItemsListScreenState extends State<ItemsListScreen> {
+class _ItemsListScreenState extends State<ItemsListScreen> with RouteAware  {
   Map<String, List<String>> categorizedItems = {};
   Map<String, String> categoryFromItem = {};
   final Map<String, String> _carbonFootprints = {};
@@ -26,104 +26,47 @@ class _ItemsListScreenState extends State<ItemsListScreen> {
         _loadCategorizedItems();
 
   }
-void _addManualItems() async {
-  final prefs = await SharedPreferences.getInstance();
-  
-  // Define your manual items
-  final List<String> manualItems = [
-  'screen|food',
-  'laptop|food',
-  'bath towel|food',
-  'Christmas stocking|food',
-  
-  // General Category
-  'modem|General',
-  'web site|General',
-  'space bar|General',
-  'monitor|General',
-  'ant|General',
-  'computer keyboard|General',
-  
-  // Kitchen Category
-  'shovel|kitchen',
-  'knife|kitchen',
-  'plate|kitchen',
-  'frying pan|kitchen',
-  
-  // Electronics Category
-  'television|electronics',
-  'smartphone|electronics',
-  'tablet|electronics',
-  'headphones|electronics',
-  'charger|electronics',
+Future<void> _loadCategorizedItems() async {
+  print('🔵 Trying to fetch items from server...');
+  final url = Uri.parse('http://192.168.1.128:3000/items');
+  print('🔵 Target URL: $url');
 
-  // Clothing Category
-  't-shirt|clothing',
-  'jeans|clothing',
-  'jacket|clothing',
-  'shoes|clothing',
-  'hat|clothing',
+  try {
+    final response = await http.get(
+      url,
+      headers: {
+        'Connection': 'close', // Optional but helps
+      },
+    );
 
-  // Furniture Category
-  'sofa|furniture',
-  'table|furniture',
-  'chair|furniture',
-  'bookshelf|furniture',
-  'lamp|furniture',
-  
-  // Sports Category
-  'football|sports',
-  'basketball|sports',
-  'tennis racket|sports',
-  'gym equipment|sports',
-  'soccer ball|sports',
-  ];
+    print('🟢 Server responded with status code: ${response.statusCode}');
 
-  // Retrieve any existing items from SharedPreferences
-  final List<String> savedItems = prefs.getStringList('scanned_items') ?? [];
-  
-  // Add the manual items to the list if they are not already in the storage
-  for (var item in manualItems) {
-    if (!savedItems.contains(item)) {
-      savedItems.add(item);
+    if (response.statusCode == 200) {
+      final List<dynamic> items = json.decode(response.body);
+      print('🟢 Server returned ${items.length} items');
+
+      Map<String, List<String>> tempMap = {};
+
+      for (var item in items) {
+        final name = item['name'];
+        final category = item['category'] ?? 'General';
+        print('✅ Processing item: $name, category: $category');
+
+        if (!tempMap.containsKey(category)) {
+          tempMap[category] = [];
+        }
+        tempMap[category]!.add(name);
+        categoryFromItem[name] = category;
+      }
+
+      setState(() => categorizedItems = tempMap);
+      print('✅ Updated UI with fetched items.');
+    } else {
+      print('❌ Failed to fetch items. Status Code: ${response.statusCode}');
     }
+  } catch (e) {
+    print('❌ Exception occurred while fetching items: $e');
   }
-
-  // Save the updated list back to SharedPreferences
-  await prefs.setStringList('scanned_items', savedItems);
-
-  debugPrint('✅ Manually added items to storage');
-}
-  Future<void> _loadCategorizedItems() async {
-  final prefs = await SharedPreferences.getInstance();
-  final items = prefs.getStringList('scanned_items') ?? [];
-  final customCategories = prefs.getStringList('custom_categories') ?? [];
-
-  // 🔍 PRINT the raw stored items in terminal
-  print("📦 Loaded scanned_items from SharedPreferences:");
-  for (var item in items) {
-    print("- $item");
-  }
-
-  Map<String, List<String>> tempMap = {};
-
-  for (var item in items) {
-    final parts = item.split('|');
-    final name = parts[0].trim();
-    final category = parts.length > 1 && parts[1].trim().isNotEmpty ? parts[1].trim() : 'General';
-
-    if (!tempMap.containsKey(category)) {
-      tempMap[category] = [];
-    }
-    tempMap[category]!.add(name);
-    categoryFromItem[name] = category;
-  }
-
-  for (var category in customCategories) {
-    tempMap.putIfAbsent(category, () => []);
-  }
-
-  setState(() => categorizedItems = tempMap);
 }
 
 
@@ -192,24 +135,17 @@ void _addManualItems() async {
       onTap: () async {
         final footprintText = _carbonFootprints[itemName] ?? '0';
         final footprintValue = double.tryParse(footprintText.split(' ').first) ?? 0;
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CarbonFootprintScreen(itemName: itemName),
-          ),
-        );
+        await Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => CarbonFootprintScreen(itemName: itemName),
+  ),
+);
 
-        if (mounted && result == true) {
-          setState(() {
-            _loadCategorizedItems();
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Changes applied"),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
+// ⚡ After returning from the item screen, always refresh!
+if (mounted) {
+  _loadCategorizedItems();
+}
       },
       child: Container(
         width: 60,
@@ -290,76 +226,99 @@ void _addManualItems() async {
       ),
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF4FAF6),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDonutChart(),
-              const SizedBox(height: 24),
-              ...categorizedItems.entries.map((entry) {
-                final category = entry.key;
-                final items = entry.value;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        margin: const EdgeInsets.only(bottom: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3E8E65),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFF3E8E65)),
-                        ),
-                        child: Text(
-                          category,
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    DragTarget<String>(
-                      onWillAccept: (data) => true,
-                      onAccept: (itemName) {
-                        final fromCategory = categoryFromItem[itemName];
-                        if (fromCategory != null && fromCategory != category) {
-                          _moveItem(itemName, category);
-                        }
-                      },
-                      builder: (context, candidateData, rejectedData) {
-                        return Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFFB2D8C2)),
-                          ),
-                          child: Wrap(
-                            spacing: 6,
-                            runSpacing: 6,
-                            children: items.map((item) => _buildDraggableItem(item)).toList(),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                );
-              }).toList(),
-            ],
-          ),
+Widget _buildEmptyState() {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.asset(
+          'assets/empty.png',
+          width: 180,
+          height: 180,
+          fit: BoxFit.contain,
         ),
-      ),
-      bottomNavigationBar: CustomToolbar(
-        context: context,
-        currentIndex: 0,
-      ),
-    );
-  }
+        const SizedBox(height: 24),
+        const Text(
+          "No items scanned yet.",
+          style: TextStyle(fontSize: 18, color: Colors.grey),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    ),
+  );
+}
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color(0xFFF4FAF6),
+    body: SafeArea(
+      child: categorizedItems.isEmpty
+          ? _buildEmptyState()
+          : SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildDonutChart(),
+                  const SizedBox(height: 24),
+                  ...categorizedItems.entries.map((entry) {
+                    final category = entry.key;
+                    final items = entry.value;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            margin: const EdgeInsets.only(bottom: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3E8E65),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFF3E8E65)),
+                            ),
+                            child: Text(
+                              category,
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        DragTarget<String>(
+                          onWillAcceptWithDetails: (data) => true,
+                          onAcceptWithDetails: (itemName) {
+                            final fromCategory = categoryFromItem[itemName];
+                            if (fromCategory != null && fromCategory != category) {
+                              _moveItem(itemName as String, category);
+                            }
+                          },
+                          builder: (context, candidateData, rejectedData) {
+                            return Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFB2D8C2)),
+                              ),
+                              child: Wrap(
+                                spacing: 6,
+                                runSpacing: 6,
+                                children: items.map((item) => _buildDraggableItem(item)).toList(),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    );
+                  }),
+                ],
+              ),
+            ),
+    ),
+    bottomNavigationBar: CustomToolbar(
+      context: context,
+      currentIndex: 0,
+    ),
+  );
+}
 }

@@ -2,10 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import '../Api/authApi.dart';
 import 'loginScreen.dart';
 import 'settingsScreen.dart';
-import 'edit_profile_screen.dart';
+import '../Api/authApi.dart';
+import '../Screens/edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -34,11 +34,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       setState(() => _isLoading = true);
       final userData = await _apiService.getUserProfile();
-
       if (userData['profileImage'] != null) {
         setState(() => _profileImageUrl = userData['profileImage']);
       }
-
       setState(() {
         _userName = userData['name'] ?? 'User';
         _userBio = userData['bio'] ?? 'Eco-conscious fashion lover';
@@ -100,11 +98,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:  Color(0xFF8BC34A),
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('My Profile'),
-        centerTitle: true,
-        elevation: 0,
+        backgroundColor: const Color(0xFF4D8B6F),
+        title: const Text('Profile'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -175,7 +178,7 @@ class _ProfileHeader extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: Colors.green.shade300,
+                color: const Color(0xFF4D8B6F),
                 width: 3,
               ),
             ),
@@ -358,9 +361,8 @@ class _MenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: Colors.green.shade800),
+      leading: Icon(icon, color: const Color(0xFF338C5E)),
       title: Text(title),
-      trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
     );
   }

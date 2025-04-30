@@ -6,8 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:permission_handler/permission_handler.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 const int kInputSize = 224;
 const int kOutputClasses = 1001;
@@ -52,8 +52,6 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
   List<String>? labels;
   double _currentZoomLevel = 1.0;
   double _baseZoomLevel = 1.0;
-  List<String> scannedItems = [];
-  Set<int> selectedItems = {};
   bool _showCaptureFeedback = false;
 
   @override
@@ -61,14 +59,6 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
     super.initState();
     _initializeCamera();
     _loadModelAndLabels();
-  }
-
-  Future<void> _loadScannedItems() async {
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> savedItems = prefs.getStringList('scanned_items') ?? [];
-    setState(() {
-      scannedItems = savedItems.map((e) => e.split('|').first).toList();
-    });
   }
 
   Future<void> _initializeCamera() async {
@@ -156,320 +146,44 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
               adjustedIndex < labels!.length)
           ? labels![adjustedIndex]
           : 'Unknown';
-      if (!scannedItems.contains(label)) {
-        scannedItems.add(label);
-        _saveItemToStorage(label);
-        setState(() => _showCaptureFeedback = true);
-        Future.delayed(const Duration(seconds: 1), () {
-          if (mounted) {
-            setState(() => _showCaptureFeedback = false);
-          }
-        });
-        debugPrint('📦 Prediction: $label | Confidence: ${(confidence * 100).toStringAsFixed(2)}%');
-      } else {
-        if (context.mounted) {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                backgroundColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 48),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Object "$label" already scanned!',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-          await Future.delayed(const Duration(milliseconds: 1000));
-          if (context.mounted) Navigator.of(context).pop();
+
+      // Send directly to backend
+      await _saveItemToServer(label);
+
+      setState(() => _showCaptureFeedback = true);
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          setState(() => _showCaptureFeedback = false);
         }
-      }
+      });
+      debugPrint('📦 Prediction: $label | Confidence: ${(confidence * 100).toStringAsFixed(2)}%');
     } catch (e) {
       debugPrint('Image capture error: $e');
     }
   }
 
-  void _saveItemToStorage(String item) async {
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> savedItems = prefs.getStringList('scanned_items') ?? [];
- 
-    final entry = '$item|General';
-    final alreadyExists = savedItems.any((e) => e.startsWith('$item|'));
- 
-
-  }
-
-  void _saveMultipleItemsToStorage(List<String> items) async {
-    final prefs = await SharedPreferences.getInstance();
-    final List<String> savedItems = prefs.getStringList('scanned_items') ?? [];
-
-    for (final item in items) {
-      final entry = '$item|General';
-      final alreadyExists = savedItems.any((e) => e.startsWith('$item|'));
-      if (!alreadyExists) {
-        savedItems.add(entry);
-        debugPrint('✅ Saved to storage: $entry');
+  Future<void> _saveItemToServer(String itemName) async {
+    final url = Uri.parse('http://192.168.2.1:3000/items');
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'name': itemName}),
+      );
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        debugPrint('✅ Sent to server: $itemName');
       } else {
-        debugPrint('ℹ️ Already in storage: $item');
+        debugPrint('❌ Server error: ${response.statusCode}');
       }
+    } catch (e) {
+      debugPrint('❌ Failed to send item: $e');
     }
-
-    await prefs.setStringList('scanned_items', savedItems);
-  }
-
-  void _clearStoredItems() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('scanned_items');
-    setState(() {
-      scannedItems.clear();
-      selectedItems.clear();
-    });
-    debugPrint('✅ Storage cleared');
-  }
-
-  void _toggleSelection(int index) {
-    setState(() {
-      if (selectedItems.contains(index)) {
-        selectedItems.remove(index);
-      } else {
-        selectedItems.add(index);
-      }
-    });
-  }
-
-  void _deleteSelectedItems() async {
-    scannedItems = scannedItems.asMap().entries.where((entry) => !selectedItems.contains(entry.key)).map((entry) => entry.value).toList();
-    setState(() {
-      selectedItems.clear();
-    });
-  }
-
-  void _showScannedItemsDialog() {
-    selectedItems.clear();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return DraggableScrollableSheet(
-          expand: true,
-          initialChildSize: 0.95,
-          minChildSize: 0.4,
-          maxChildSize: 0.95,
-          builder: (context, scrollController) {
-            return StatefulBuilder(
-              builder: (context, setModalState) {
-                return Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Scanned Items', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                          Row(
-                            children: [
-                              if (selectedItems.isNotEmpty)
-                                IconButton(
-                                  icon: const Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () {
-                                    _deleteSelectedItems();
-                                    setModalState(() {}); // Refresh modal state after delete
-                                  },
-                                ),
-                              if (selectedItems.isNotEmpty)
-                                IconButton(
-                                  icon: const Icon(Icons.add_box, color: Colors.green),
-                                  onPressed: () {
-                                    final selectedLabels = selectedItems.map((i) => scannedItems[i]).toList();
-                                    _saveMultipleItemsToStorage(selectedLabels);
-                                    setState(() {
-                                      scannedItems = scannedItems.asMap().entries
-                                          .where((entry) => !selectedItems.contains(entry.key))
-                                          .map((entry) => entry.value)
-                                          .toList();
-                                      selectedItems.clear();
-                                    });
-                                    setModalState(() {});
-                                  },
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Expanded(
-                        child: scannedItems.isEmpty
-                            ? const Center(child: Text('No items scanned yet.'))
-                            : ListView.builder(
-                                controller: scrollController,
-                                itemCount: scannedItems.length,
-                                itemBuilder: (context, index) {
-                                  final selected = selectedItems.contains(index);
-                                  return Column(
-                                    children: [
-                                      Container(
-                                        color: selected ? Colors.green.withOpacity(0.3) : null,
-                                        child: ListTile(
-                                          title: Row(
-                                            children: [
-                                              Checkbox(
-                                                value: selected,
-                                                onChanged: (bool? checked) {
-                                                  setState(() {
-                                                    _toggleSelection(index);
-                                                  });
-                                                  setModalState(() {}); // Update modal sheet
-                                                },
-                                              ),
-                                              Expanded(child: Text(scannedItems[index])),
-                                              IconButton(
-                                                icon: const Icon(Icons.add_circle, color: Colors.green),
-                                                onPressed: () {
-                                                  _saveItemToStorage(scannedItems[index]);
-                                                  setState(() {
-                                                    scannedItems.removeAt(index);
-                                                    selectedItems.remove(index);
-                                                  });
-                                                  setModalState(() {});
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _showSettingsDialog() {
-    bool isFlashOn = _controller?.value.flashMode == FlashMode.torch;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Settings',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: const [
-                          Icon(Icons.flash_on, color: Colors.orange),
-                          SizedBox(width: 8),
-                          Text('Flashlight'),
-                        ],
-                      ),
-                      Switch(
-                        value: isFlashOn,
-                        onChanged: (value) async {
-                          if (_controller != null) {
-                            final newMode = value ? FlashMode.torch : FlashMode.off;
-                            await _controller!.setFlashMode(newMode);
-                                  setState(() => isFlashOn = value); // update main state
-                            setModalState(() {}); // update bottom sheet
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade700,
-              foregroundColor: Colors.white,
-            ),
-            icon: const Icon(Icons.delete_forever),
-            label: const Text("Clear All Scanned Items"),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  title: const Text("Are you sure?"),
-                  content: const Text("This will permanently delete all scanned items."),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("Cancel"),
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade700,
-                        foregroundColor: Colors.white,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close dialog
-                        Navigator.of(context).pop(); // Close settings sheet
-                        _clearStoredItems(); // Clear items
-                      },
-                      child: const Text("Confirm"),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
   }
 
   @override
   void dispose() {
     _controller?.dispose();
     interpreter.close();
-    scannedItems.clear();
     super.dispose();
   }
 
@@ -496,12 +210,11 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
                   Positioned.fill(
                     child: CameraPreview(_controller!),
                   ),
-                  Positioned(
-                    top: 100,
-                    left: 0,
-                    right: 0,
-                    child: Visibility(
-                      visible: _showCaptureFeedback,
+                  if (_showCaptureFeedback)
+                    Positioned(
+                      top: 100,
+                      left: 0,
+                      right: 0,
                       child: Center(
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -510,20 +223,19 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Text(
-                            '✅ Item captured',
+                            '✅ Item captured and sent!',
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
                     ),
-                  ),
                   Positioned(
                     bottom: 0,
                     left: 0,
                     right: 0,
                     child: Container(
-                      height: 100, // Increased height for better spacing
-                      padding: const EdgeInsets.symmetric(vertical: 10), // Added padding
+                      height: 100,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
                         color: Colors.green.shade800,
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
@@ -533,7 +245,7 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.settings, color: Colors.white),
-                            onPressed: _showSettingsDialog,
+                            onPressed: () {},
                           ),
                           Transform.translate(
                             offset: const Offset(0, -35),
@@ -557,7 +269,7 @@ class _RealTimeScanScreenState extends State<RealTimeScanScreen> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.list_alt, color: Colors.white),
-                            onPressed: _showScannedItemsDialog,
+                            onPressed: () {},
                           ),
                         ],
                       ),

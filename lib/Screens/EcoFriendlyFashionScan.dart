@@ -5,10 +5,10 @@ import 'package:http_parser/http_parser.dart';
 import 'CameraOptionsScreen.dart';
 
 const String BEARER_TOKEN = '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';
-const String SERVER_URL = 'http://192.168.1.15/upload';
+const String SERVER_URL = 'http://192.168.1.122:3000/upload';
 
 class EcoFriendlyFashionScanScreen extends StatefulWidget {
-  const EcoFriendlyFashionScanScreen({super.key});
+  const EcoFriendlyFashionScanScreen({Key? key}) : super(key: key);
 
   @override
   _EcoFriendlyFashionScanScreenState createState() =>
@@ -34,7 +34,7 @@ class _EcoFriendlyFashionScanScreenState
     _dio.options.connectTimeout = const Duration(seconds: 30);
     _dio.options.receiveTimeout = const Duration(seconds: 30);
     _dio.options.headers = {
-       'Authorization': 'Bearer $BEARER_TOKEN',
+      'Authorization': 'Bearer $BEARER_TOKEN',
       'Accept': 'application/json',
     };
   }
@@ -44,16 +44,9 @@ class _EcoFriendlyFashionScanScreenState
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10,
-              spreadRadius: 0,
-            ),
-          ],
         ),
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -76,7 +69,7 @@ class _EcoFriendlyFashionScanScreenState
                     Navigator.pop(context);
                     _pickImage(ImageSource.camera);
                   },
-                  color: Color(0xFF8BC34A),
+                  color: const Color(0xFF4D8B6F),
                 ),
                 _ImageSourceButton(
                   icon: Icons.photo_library_rounded,
@@ -138,9 +131,8 @@ class _EcoFriendlyFashionScanScreenState
           filename: 'fabric_${DateTime.now().millisecondsSinceEpoch}.jpg',
           contentType: MediaType('image', 'jpeg'),
         ),
+        'user_id': 'current_user_id',
       });
-
-      print('Attempting to upload to: $SERVER_URL');
 
       final response = await _dio.post(
         SERVER_URL,
@@ -150,19 +142,16 @@ class _EcoFriendlyFashionScanScreenState
         },
       );
 
-      print('Response received: ${response.statusCode}');
-      print('Response data: ${response.data}');
-
       if ([200, 201].contains(response.statusCode)) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => CameraOptionsScreen(
-              fabric: response.data['fabric'] ?? 'Unknown',
               imagePath: image.path,
+              fabric: response.data['fabric'] ?? 'Unknown',
               compositionData: response.data['composition'] ?? {},
               brandData: response.data['brand'] ?? 'Unknown',
-              carbonFootprint: response.data['carbonFootprint'] ?? 0,
+              carbonFootprint: response.data['carbonFootprint']?.toInt() ?? 0,
               message: response.data['message'] ?? '',
             ),
           ),
@@ -171,16 +160,10 @@ class _EcoFriendlyFashionScanScreenState
         throw Exception(response.data['message'] ?? 'Invalid server response');
       }
     } on DioException catch (e) {
-      print('Dio Error Details:');
-      print('- Type: ${e.type}');
-      print('- Message: ${e.message}');
-      print('- Response: ${e.response?.data}');
-
       setState(() {
         errorMessage = _getErrorMessage(e);
       });
     } catch (e) {
-      print('General Error: $e');
       setState(() {
         errorMessage = 'Processing failed: ${e.toString()}';
       });
@@ -198,24 +181,24 @@ class _EcoFriendlyFashionScanScreenState
       } else if (e.response!.statusCode == 413) {
         return 'File too large';
       } else if (e.response!.statusCode == 415) {
-        return 'Unsupported media type: ${e.response!.data['error'] ?? 'Please upload a valid image file'}';
+        return 'Unsupported media type';
       }
-      return 'Server error: ${e.response!.statusCode} - ${e.response!.data['error'] ?? 'Unknown error'}';
+      return 'Server error: ${e.response!.statusCode}';
     }
 
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
-        return 'Connection timeout. Please check your network.';
+        return 'Connection timeout';
       case DioExceptionType.sendTimeout:
-        return 'Send timeout. Server may be busy.';
+        return 'Send timeout';
       case DioExceptionType.receiveTimeout:
-        return 'Receive timeout. Server response delayed.';
+        return 'Receive timeout';
       case DioExceptionType.badResponse:
-        return 'Server error: ${e.response?.statusCode}';
+        return 'Server error';
       case DioExceptionType.cancel:
         return 'Request cancelled';
       case DioExceptionType.unknown:
-        return 'Network error: ${e.message}';
+        return 'Network error';
       default:
         return 'An error occurred';
     }
@@ -226,40 +209,38 @@ class _EcoFriendlyFashionScanScreenState
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        backgroundColor: Color(0xFF8BC34A),
+        backgroundColor: const Color(0xFF4D8B6F),
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Eco Scan',
           style: TextStyle(
-            color: Color(0xFF030500),
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_rounded, color: Color(0xFF030500)),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                const SizedBox(height: 24),
-                _HeaderSection(),
-                const SizedBox(height: 32),
-                _ScanSection(
-                  isLoading: isLoading,
-                  errorMessage: errorMessage,
-                  onTap: () => _showImageSourceDialog(context),
-                ),
-                const SizedBox(height: 40),
-                _HowItWorksSection(),
-                const SizedBox(height: 40),
-              ],
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: [
+              const SizedBox(height: 24),
+              _HeaderSection(),
+              const SizedBox(height: 32),
+              _ScanButtonSection(
+                isLoading: isLoading,
+                errorMessage: errorMessage,
+                onTap: () => _showImageSourceDialog(context),
+              ),
+              const SizedBox(height: 40),
+              _HowItWorksSection(),
+              const SizedBox(height: 40),
+            ],
           ),
         ),
       ),
@@ -316,20 +297,19 @@ class _HeaderSection extends StatelessWidget {
     return Column(
       children: [
         Image.asset(
-          'assets/fashion_scan.png', // Main image
-          height: 180,
+          'assets/Clothes.png',
+          height: 280,
           errorBuilder: (context, error, stackTrace) => Image.asset(
-            'assets/ceintre_image.png', // Replace with your fallback image
+            'assets/ceintre_image.png',
             height: 200,
             width: 200,
           ),
         ),
-
         Text(
           "You're rocking the outfit today!",
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Color(0xFF1B5E20),
+            color: const Color(0xFF4D8B6F),
           ),
         ),
         const SizedBox(height: 8),
@@ -345,12 +325,12 @@ class _HeaderSection extends StatelessWidget {
   }
 }
 
-class _ScanSection extends StatelessWidget {
+class _ScanButtonSection extends StatelessWidget {
   final bool isLoading;
   final String? errorMessage;
   final VoidCallback onTap;
 
-  const _ScanSection({
+  const _ScanButtonSection({
     required this.isLoading,
     required this.errorMessage,
     required this.onTap,
@@ -360,43 +340,39 @@ class _ScanSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: isLoading ? null : onTap,
-          child: Container(
-            width: 180,
-            height: 180,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 12,
-                  spreadRadius: 2,
-                ),
-              ],
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: isLoading ? null : onTap,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4D8B6F),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 2,
+              shadowColor: const Color(0xFF4D8B6F).withOpacity(0.3),
             ),
             child: isLoading
-                ? Center(
+                ? const SizedBox(
+              width: 20,
+              height: 20,
               child: CircularProgressIndicator(
-                color: Color(0xFF8BC34A),
+                color: Colors.white,
+                strokeWidth: 2,
               ),
             )
-                : Column(
+                : Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.camera_alt_rounded,
-                  size: 48,
-                  color: Color(0xFF1B5E20),
-                ),
-                const SizedBox(height: 12),
+                const Icon(Icons.camera_alt_rounded, size: 24),
+                const SizedBox(width: 12),
                 Text(
-                  "Scan Your Clothes",
+                  "Start Eco Scan",
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF1B5E20),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -425,38 +401,6 @@ class _ScanSection extends StatelessWidget {
             ),
           ),
         ],
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton(
-            onPressed: isLoading ? null : onTap,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF8BC34A),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-            ),
-            child: isLoading
-                ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            )
-                : Text(
-              "Start Scan",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -472,7 +416,7 @@ class _HowItWorksSection extends StatelessWidget {
           "How it works:",
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Color(0xFF253715),
+            color: const Color(0xFF253715),
           ),
         ),
         const SizedBox(height: 16),
@@ -523,13 +467,13 @@ class _StepItem extends StatelessWidget {
             width: 28,
             height: 28,
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Color(0xFF8BC34A),
+            decoration: const BoxDecoration(
+              color: Color(0xFF4D8B6F),
               shape: BoxShape.circle,
             ),
             child: Text(
               number.toString(),
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
@@ -564,4 +508,3 @@ class _StepItem extends StatelessWidget {
     );
   }
 }
-//changed

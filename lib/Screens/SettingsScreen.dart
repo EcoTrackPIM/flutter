@@ -15,28 +15,28 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           ListTile(
-            leading: Icon(Icons.notifications, color: Colors.green[800]),
+            leading: Icon(Icons.notifications, color: Color(0xFF4D8B6F)),
             title: const Text('Notifications'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {},
           ),
           const Divider(),
           ListTile(
-            leading: Icon(Icons.privacy_tip, color: Colors.green[800]),
+            leading: Icon(Icons.privacy_tip, color: Color(0xFF4D8B6F)),
             title: const Text('Privacy'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {},
           ),
           const Divider(),
           ListTile(
-            leading: Icon(Icons.help, color: Colors.green[800]),
+            leading: Icon(Icons.help, color: Color(0xFF4D8B6F)),
             title: const Text('Help & Support'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {},
           ),
           const Divider(),
           ListTile(
-            leading: Icon(Icons.info, color: Colors.green[800]),
+            leading: Icon(Icons.info, color: Color(0xFF4D8B6F)),
             title: const Text('About'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {},

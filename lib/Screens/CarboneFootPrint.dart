@@ -1,10 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import '../Api/authApi.dart'; // Import the ApiService
 
 class CarbonFootprintScreen extends StatelessWidget {
   final double carbonFootprint;
   final String fabric;
   final String fileName;
   final String outfitType;
+  final String? scanId; // Add this
+
 
   const CarbonFootprintScreen({
     super.key,
@@ -12,35 +16,76 @@ class CarbonFootprintScreen extends StatelessWidget {
     required this.fabric,
     required this.fileName,
     required this.outfitType,
+    this.scanId, // Add this
+
   });
 
   @override
   Widget build(BuildContext context) {
-    final adjustedFootprint =
-    _calculateAdjustedFootprint(carbonFootprint, outfitType);
+    final adjustedFootprint = carbonFootprint;
     final impactLevel = _getImpactLevel(adjustedFootprint);
+    final primaryColor = const Color(0xFF4D8B6F);
+    final apiService = ApiService(); // Create an instance of ApiService
+
+    Future<void> _saveResult(BuildContext context) async {
+      final apiService = ApiService();
+
+      if (scanId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Scan reference missing!")),
+        );
+        return;
+      }
+
+      try {
+        final response = await apiService.updateCarbonFootprint(
+          uploadId: scanId!,
+          carbonFootprint: carbonFootprint,
+        );
+
+        print('Update Response: $response');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response['message'] ?? 'Update successful'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Update failed: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('Sustainability Report',
-            style: TextStyle(fontWeight: FontWeight.bold)),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              fontSize: 18,
+            )),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.black,
+        backgroundColor: primaryColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            // Header Card
+            // Modern Header Card with Fabric Info
             Card(
-              elevation: 0,
+              elevation: 2,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
                 side: BorderSide(color: Colors.grey[200]!, width: 1),
@@ -55,11 +100,10 @@ class CarbonFootprintScreen extends StatelessWidget {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Colors.green[50],
+                            color: primaryColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(Icons.eco,
-                              color: Colors.green[700], size: 32),
+                          child: Icon(Icons.eco, color: primaryColor, size: 32),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -67,17 +111,20 @@ class CarbonFootprintScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Fabric Analysis",
+                                "FABRIC ANALYSIS",
                                 style: TextStyle(
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   color: Colors.grey[600],
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
+                              const SizedBox(height: 4),
                               Text(
                                 fabric.toUpperCase(),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
+                                  color: primaryColor,
                                 ),
                               ),
                             ],
@@ -89,27 +136,26 @@ class CarbonFootprintScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildInfoItem("Outfit", outfitType, Icons.checkroom),
-                        _buildInfoItem("File", fileName.split('/').last,
-                            Icons.insert_drive_file),
+                        _buildInfoItem("Outfit Type", outfitType, Icons.checkroom),
+                        _buildInfoItem(
+                            "File", fileName.split('/').last, Icons.insert_drive_file),
                       ],
                     ),
                   ],
                 ),
               ),
             ),
-
             const SizedBox(height: 32),
-
             // Carbon Footprint Visualization
             Column(
               children: [
-                const Text(
+                Text(
                   "CARBON FOOTPRINT",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
+                    color: primaryColor,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -121,15 +167,20 @@ class CarbonFootprintScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // Animated Circle with footprint
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 500),
-                  width: 180,
-                  height: 180,
+                // Footprint Circle with Gradient
+                Container(
+                  width: 200,
+                  height: 200,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: impactLevel.color.withOpacity(0.2),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        impactLevel.color.withOpacity(0.1),
+                        impactLevel.color.withOpacity(0.3),
+                      ],
+                    ),
                     border: Border.all(
                       color: impactLevel.color,
                       width: 3,
@@ -147,6 +198,7 @@ class CarbonFootprintScreen extends StatelessWidget {
                             color: impactLevel.color,
                           ),
                         ),
+                        const SizedBox(height: 4),
                         Text(
                           "CO₂ EQUIVALENT",
                           style: TextStyle(
@@ -158,44 +210,40 @@ class CarbonFootprintScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 24),
-
-                // Impact Level Indicator
-                Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: impactLevel.color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border:
-                    Border.all(color: impactLevel.color.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.eco, color: impactLevel.color),
-                      const SizedBox(width: 8),
-                      Text(
-                        impactLevel.text,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: impactLevel.color,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
-
+            const SizedBox(height: 24),
+            // Impact Level Indicator
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                color: impactLevel.color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: impactLevel.color.withOpacity(0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.eco, color: impactLevel.color),
+                  const SizedBox(width: 12),
+                  Text(
+                    impactLevel.text.toUpperCase(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: impactLevel.color,
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 32),
-
-            // Sustainability Tips
+            // Sustainability Tips Section
             _buildSustainabilityTips(impactLevel),
-
             const SizedBox(height: 32),
-
             // Action Buttons
             Row(
               children: [
@@ -203,12 +251,18 @@ class CarbonFootprintScreen extends StatelessWidget {
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: Color(0xFF8BC34A)),
+                      side: BorderSide(color: primaryColor, width: 1.5),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     onPressed: () => Navigator.pop(context),
                     child: Text(
-                      "ANOTHER OUTFIT..",
-                      style: TextStyle(color: Color(0xFF4D8B6F)),
+                      "ANOTHER OUTFIT",
+                      style: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -216,13 +270,20 @@ class CarbonFootprintScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF8BC34A),
+                      backgroundColor: primaryColor,
                       padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
                     ),
                     onPressed: () => _saveResult(context),
                     child: const Text(
                       "SAVE REPORT",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -240,13 +301,14 @@ class CarbonFootprintScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, size: 16, color: Colors.grey),
-            const SizedBox(width: 4),
+            Icon(icon, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.grey,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -255,6 +317,7 @@ class CarbonFootprintScreen extends StatelessWidget {
         Text(
           value,
           style: const TextStyle(
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -284,27 +347,41 @@ class CarbonFootprintScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "SUSTAINABILITY TIPS",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
+            color: const Color(0xFF4D8B6F),
           ),
         ),
         const SizedBox(height: 16),
         ...tips.map((tip) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(bottom: 16),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.lightbulb_outline, size: 20, color: impact.color),
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: impact.color.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.lightbulb_outline,
+                  size: 16,
+                  color: impact.color,
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   tip,
                   style: TextStyle(
                     color: Colors.grey[700],
+                    fontSize: 14,
                   ),
                 ),
               ),
@@ -315,41 +392,10 @@ class CarbonFootprintScreen extends StatelessWidget {
     );
   }
 
-  double _calculateAdjustedFootprint(double baseFootprint, String outfitType) {
-    // Adjust footprint based on outfit type
-    final outfitMultipliers = {
-      'T-Shirt': 1.0,
-      'Shirt': 1.2,
-      'Pullover': 1.5,
-      'Dress': 1.8,
-      'Skirt': 1.3,
-      'Jacket': 2.0,
-      'Jeans': 1.7,
-      'Sweater': 1.6,
-      'Shorts': 0.9,
-    };
-
-    final multiplier = outfitMultipliers[outfitType] ?? 1.0;
-    return baseFootprint * multiplier;
-  }
-
   ImpactLevel _getImpactLevel(double footprint) {
     if (footprint < 15) return ImpactLevel.low;
     if (footprint < 30) return ImpactLevel.medium;
     return ImpactLevel.high;
-  }
-
-  void _saveResult(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text("Report saved successfully!"),
-        backgroundColor: Colors.green[700],
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    );
   }
 }
 
@@ -363,6 +409,3 @@ enum ImpactLevel {
 
   const ImpactLevel(this.color, this.text);
 }
-
-
-//changedddd

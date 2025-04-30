@@ -7,11 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import '../Screens/LoginScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-
-
-
-
 import 'bgService/background_service.dart';
 import 'bgService/permission_handler.dart';
 
@@ -66,11 +61,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, // 👈 Add this line
       title: 'ECO Track',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const SplashScreen(),
+      home: HomeScreen(),
     );
   }
 }

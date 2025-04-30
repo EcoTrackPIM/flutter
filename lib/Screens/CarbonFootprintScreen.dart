@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
 class CarbonFootprintScreen extends StatefulWidget {
   final String itemName;
 
@@ -17,8 +19,9 @@ class _CarbonFootprintScreenState extends State<CarbonFootprintScreen> {
   double carbonFootprint = 0.0;
   String selectedCategory = 'General';
   int usageCount = 1;
-  List<String> allCategories = [];
-
+  String? tips; // ✅ New field for tips
+bool recyclable = false; // ♻️
+String? location;         // 📍
   @override
   void initState() {
     super.initState();
@@ -26,84 +29,203 @@ class _CarbonFootprintScreenState extends State<CarbonFootprintScreen> {
   }
 
   Future<void> _loadItemData() async {
-    final prefs = await SharedPreferences.getInstance();
+    try {
+      final response = await http.get(Uri.parse('http://192.168.1.128:3000/items/name/${widget.itemName}'));
 
-    carbonFootprint = prefs.getDouble('carbonFootprint_${widget.itemName}') ?? 0.0;
-    selectedCategory = prefs.getString('category_${widget.itemName}') ?? 'General';
-    usageCount = prefs.getInt('usageCount_${widget.itemName}') ?? 1;
+      if (response.statusCode == 200) {
+        final itemData = json.decode(response.body);
 
-    final scannedItems = prefs.getStringList('scanned_items') ?? [];
-    final categories = scannedItems.map((e) => e.split('|').length > 1 ? e.split('|')[1].trim() : 'General').toSet().toList();
-    allCategories = categories.isEmpty ? ['General'] : categories;
+        setState(() {
+          carbonFootprint = (itemData['carbonFootprint'] ?? 0).toDouble();
+          selectedCategory = itemData['category'] ?? 'General';
+          usageCount = itemData['amount'] ?? 1;
+          tips = itemData['tips']; // ✅ <-- Fetch tips from database
+          recyclable = itemData['recyclable'] ?? false;
+location = itemData['location'];
 
-    print('Item: ${widget.itemName}, Category: $selectedCategory, Usage: $usageCount');
+        });
 
-    setState(() {});
-  }
-
-void _updateUsageCount(int newCount) async {
-  if (newCount == usageCount) return; // ✅ Prevent redundant update
-
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setInt('usageCount_${widget.itemName}', newCount);
-  setState(() => usageCount = newCount);
-}
-  void _showUsagePicker(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      return SizedBox(
-        height: 250,
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            const Text('Select Usage Count', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Expanded(
-              child: CupertinoPicker(
-                itemExtent: 40,
-                scrollController: FixedExtentScrollController(initialItem: usageCount - 1),
-                onSelectedItemChanged: (index) {
-                  _updateUsageCount(index + 1);
-                },
-                children: List.generate(99, (index) => Center(child: Text('${index + 1}'))),
-              ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
-void _updateCategory(String newCategory) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('category_${widget.itemName}', newCategory);
-
-  // 🔁 Update the scanned_items list
-  List<String> scannedItems = prefs.getStringList('scanned_items') ?? [];
-  for (int i = 0; i < scannedItems.length; i++) {
-    if (scannedItems[i].startsWith('${widget.itemName}|')) {
-      scannedItems[i] = '${widget.itemName}|$newCategory';
+        print('✅ Loaded item data: $itemData');
+      } else {
+        print('❌ Failed to fetch item: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('❌ Error fetching item: $error');
     }
   }
-  await prefs.setStringList('scanned_items', scannedItems);
 
-  print('✅ Updated ${widget.itemName} to new category: $newCategory');
-  print('📦 Updated scanned_items list:');
-  for (var item in scannedItems) {
-    print('- $item');
+  Future<void> deleteItemByName(String name) async {
+    final url = Uri.parse('http://192.168.1.128:3000/items/name/$name');
+
+    try {
+      final response = await http.delete(url);
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Item deleted successfully!')),
+        );
+        Navigator.pop(context);
+      } else {
+        debugPrint('❌ Failed to delete item. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('❌ Error deleting item: $e');
+    }
   }
 
-  if (mounted) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Category updated.')),
+  Future<void> updateItemAmountByName(String name, int newAmount) async {
+    final url = Uri.parse('http://192.168.1.128:3000/items/name/$name/amount');
+
+    try {
+      final response = await http.patch(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'amount': newAmount}),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Amount updated successfully!')),
+        );
+        _loadItemData();
+      } else {
+        debugPrint('❌ Failed to update amount. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('❌ Error updating amount: $e');
+    }
+  }
+
+  void _showDeleteConfirmation() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Item'),
+        content: Text('Are you sure you want to delete "${widget.itemName}"?'),
+        actions: [
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          ElevatedButton(
+            child: const Text('Delete'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              deleteItemByName(widget.itemName);
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
     );
-
-    // ⏳ Wait a bit so the user sees the snackbar, then return
-    Future.delayed(const Duration(milliseconds: 500), () {
-      Navigator.pop(context, true); // ✅ Return true to notify caller to reload
-    });
   }
-}
+
+  Widget _buildCarbonFootprintBadge() {
+final carbonFootprintGrams = carbonFootprint * usageCount;
+    String label = '';
+    Color color = Colors.grey;
+
+    if (carbonFootprintGrams < 1000) {
+      label = 'Low';
+      color = Colors.green;
+    } else if (carbonFootprintGrams < 5000) {
+      label = 'Medium';
+      color = Colors.orange;
+    } else {
+      label = 'High';
+      color = Colors.red;
+    }
+
+    return Column(
+      children: [
+        Container(
+          width: 150,
+          height: 150,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withOpacity(0.2),
+            border: Border.all(color: color, width: 5),
+          ),
+          child: Center(
+            child: Text(
+              '${carbonFootprintGrams.toStringAsFixed(0)} g CO₂',
+              style: TextStyle(
+                fontSize: 18,
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUsagePicker() {
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+  context: context,
+  builder: (context) => Container(
+    height: 250,
+    child: Column(
+      children: [
+        const SizedBox(height: 10),
+        const Text(
+          'Select Usage Count',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        Expanded(
+          child: CupertinoPicker(
+            scrollController: FixedExtentScrollController(initialItem: usageCount - 1),
+            itemExtent: 40,
+            onSelectedItemChanged: (index) {
+              int newUsage = index + 1;
+              setState(() => usageCount = newUsage);
+            },
+            children: List.generate(100, (index) => Center(child: Text('${index + 1} times'))),
+          ),
+        ),
+      ],
+    ),
+  ),
+).then((_) {
+  // After picker closes, send update once!
+  updateItemAmountByName(widget.itemName, usageCount);
+});
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          'Used $usageCount time${usageCount > 1 ? 's' : ''} (Tap to Change)',
+          style: const TextStyle(fontSize: 16),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,151 +239,102 @@ void _updateCategory(String newCategory) async {
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: const Icon(Icons.delete, color: Colors.red),
+            onPressed: _showDeleteConfirmation,
             tooltip: 'Delete Item',
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-
-              await prefs.remove('carbonFootprint_${widget.itemName}');
-              await prefs.remove('category_${widget.itemName}');
-              await prefs.remove('usageCount_${widget.itemName}');
-
-              List<String> items = prefs.getStringList('allItems') ?? [];
-              items.remove(widget.itemName);
-              await prefs.setStringList('allItems', items);
-
-              List<String> scannedItems = prefs.getStringList('scanned_items') ?? [];
-              scannedItems.removeWhere((entry) => entry.startsWith('${widget.itemName}|'));
-              await prefs.setStringList('scanned_items', scannedItems);
-
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Item deleted.')),
-                );
-                Future.delayed(const Duration(milliseconds: 300), () => Navigator.pop(context, true));
-              }
-            },
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            Center(
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.green.shade100,
-                  border: Border.all(
-                    color: Colors.green.shade700,
-                    width: 4,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    '${carbonFootprint.toStringAsFixed(2)} kg CO₂',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.green.shade800,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            Text(
-              'Item Name:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade900,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              widget.itemName,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Category:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade900,
-              ),
-            ),
-            const SizedBox(height: 10),
-            DropdownButton<String>(
-              value: selectedCategory,
-              items: allCategories.map((String category) {
-                return DropdownMenuItem<String>(
-                  value: category,
-                  child: Text(category),
-                );
-              }).toList(),
-              onChanged: (String? newCategory) {
-                if (newCategory != null) {
-                  _updateCategory(newCategory);
-                }
-              },
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Usage Count:',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green.shade900,
-              ),
-            ),
-            const SizedBox(height: 10),
-            GestureDetector(
-  onTap: () => _showUsagePicker(context),
-  child: Container(
-    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.grey.shade400),
-      borderRadius: BorderRadius.circular(8),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
+body: SingleChildScrollView(
+  physics: const BouncingScrollPhysics(), // ✅ Makes it smooth (optional)
+  child: Padding(
+    padding: const EdgeInsets.all(20),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.arrow_drop_down),
-        const SizedBox(width: 10),
+        const SizedBox(height: 20),
+        Center(child: _buildCarbonFootprintBadge()),
+        const SizedBox(height: 30),
         Text(
-          'Used $usageCount time${usageCount > 1 ? 's' : ''}',
-          style: const TextStyle(fontSize: 16),
+          'Item Name:',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green.shade900,
+          ),
         ),
+        const SizedBox(height: 10),
+        Text(widget.itemName, style: const TextStyle(fontSize: 16, color: Colors.black87)),
+        const SizedBox(height: 20),
+        Text(
+          'Category:',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green.shade900,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(selectedCategory, style: const TextStyle(fontSize: 16, color: Colors.black87)),
+        const SizedBox(height: 20),
+        Text(
+          'Usage Count:',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green.shade900,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildUsagePicker(),
+        if (tips != null && tips!.isNotEmpty) ...[
+          const SizedBox(height: 40),
+          const Text(
+            'Tips for this Item:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text('• $tips'),
+          const SizedBox(height: 20),
+Row(
+  children: [
+    Icon(
+      recyclable ? Icons.recycling : Icons.delete_forever,
+      color: recyclable ? Colors.green : Colors.grey,
+      size: 28,
+    ),
+    const SizedBox(width: 10),
+    Text(
+      recyclable ? 'Recyclable' : 'Not Recyclable',
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+        color: recyclable ? Colors.green : Colors.grey,
+      ),
+    ),
+  ],
+),const SizedBox(height: 20),
+Text(
+  'Location:',
+  style: TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Colors.green.shade900,
+  ),
+),
+const SizedBox(height: 10),
+Text(
+  location ?? 'Unknown',
+  style: const TextStyle(fontSize: 16, color: Colors.black87),
+),
+        ],
       ],
     ),
   ),
 ),
-            const SizedBox(height: 40),
-            const Text(
-              'Tips to Reduce Carbon Footprint:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text('• Use items for a longer period before replacing.'),
-            const Text('• Recycle or donate used products.'),
-            const Text('• Opt for sustainable alternatives when possible.'),
-          ],
-        ),
-      ),
     );
   }
 }

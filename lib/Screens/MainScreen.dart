@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_eco_track/Screens/HomeScreen.dart';
 import 'package:flutter_eco_track/Screens/distance_map.dart';
 import 'package:flutter_eco_track/Screens/profile_screen.dart';
 import 'package:flutter_eco_track/Screens/rapport.dart';
 import 'package:flutter_eco_track/food/food.dart';
-
 import 'EcoFriendlyFashionScan.dart';
 import 'ScanOptionsScreen.dart';
+import 'HomeScreen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -18,57 +19,90 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    PlaceholderScreen(title: "Home"),
+    HomeScreen(),
     ScanOptionsScreen(),
     FoodScreen(),
     DailyRapportScreen(),
-    ProfileScreen()  // Profile screen is now the 5th item (index 4)
+    ProfileScreen()
   ];
+
+  final Color activeColor = const Color(0xFF4D8B6F);
+  final Color inactiveColor = Colors.grey;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;  // This will automatically navigate to ProfileScreen when index is 4
-          });
-        },
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        iconSize: 35,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/home.png', width: 28, height: 28),
-            activeIcon: Image.asset('assets/home.png', width: 35, height: 35),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/clothing.png', width: 28, height: 28),
-            activeIcon: Image.asset('assets/clothing.png', width: 35, height: 35),
-            label: 'Clothes',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/plat.png', width: 32, height: 32),
-            activeIcon: Image.asset('assets/plat.png', width: 35, height: 35),
-            label: 'Food',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/track.png', width: 32, height: 32),
-            activeIcon: Image.asset('assets/track.png', width: 35, height: 35),
-            label: 'Track',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset('assets/user.png', width: 32, height: 32),
-            activeIcon: Image.asset('assets/user.png', width: 35, height: 35),
-            label: 'Profile',  // This corresponds to index 4 in _screens
-          ),
-        ],
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: Icon(Icons.home_outlined,
+                  color: _currentIndex == 0 ? activeColor : inactiveColor,
+                  size: 28),
+              onPressed: () {
+                setState(() {
+                  _currentIndex = 0;
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.checkroom_outlined,
+                  color: _currentIndex == 1 ? activeColor : inactiveColor,
+                  size: 28),
+              onPressed: () {
+                setState(() {
+                  _currentIndex = 1;
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.restaurant_menu_outlined,
+                  color: _currentIndex == 2 ? activeColor : inactiveColor,
+                  size: 28),
+              onPressed: () {
+                setState(() {
+                  _currentIndex = 2;
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.alt_route_outlined,
+                  color: _currentIndex == 3 ? activeColor : inactiveColor,
+                  size: 28),
+              onPressed: () {
+                setState(() {
+                  _currentIndex = 3;
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.person_outline,
+                  color: _currentIndex == 4 ? activeColor : inactiveColor,
+                  size: 28),
+              onPressed: () {
+                setState(() {
+                  _currentIndex = 4;
+                });
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

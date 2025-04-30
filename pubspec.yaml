@@ -123,7 +123,9 @@ flutter:
     - assets/start.png
     - assets/yolov5.tflite
     - assets/labels.txt
-
+    - assets/cookies.png
+    - assets/cookie_image.png
+    - assets/empty.png
 
 
   # The following line ensures that the Material Icons font is

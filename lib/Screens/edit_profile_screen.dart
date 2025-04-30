@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../Api/authApi.dart';
-import '../Components/Toolbar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -18,17 +17,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _apiService = ApiService();
   bool _isLoading = false;
 
-  // Controllers for each field
   late TextEditingController _nameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
   late TextEditingController _ageController;
 
+  final Color _backgroundColor = const Color(0xFFF2F2F2);
+  final Color _greenColor = const Color(0xFF4D8B6F);
+
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with current user data
     _nameController = TextEditingController(text: widget.userData['name'] ?? '');
     _emailController = TextEditingController(text: widget.userData['email'] ?? '');
     _phoneController = TextEditingController(text: widget.userData['Phone_number'] ?? '');
@@ -62,7 +62,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile updated successfully')),
       );
-      Navigator.pop(context, true); // Return true to indicate success
+      Navigator.pop(context, true);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to update profile: $e')),
@@ -75,11 +75,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:  Color(0xFF8BC34A),
+      backgroundColor: _backgroundColor,
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        backgroundColor: Color(0xFF4D8B6F),
+        title: const Text('Edit Profile', style: TextStyle(color: Colors.black)),
         centerTitle: true,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
@@ -109,7 +111,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 controller: _emailController,
                 label: 'Email Address',
                 icon: Icons.email,
-                enabled: false, // Email shouldn't be editable
+                enabled: false,
               ),
               const SizedBox(height: 16),
               _buildTextField(
@@ -135,19 +137,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _greenColor,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.normal, // <- Normal weight here
+                    ),
+                  ),
                   onPressed: _isLoading ? null : _updateProfile,
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Color(0xFF6A8D73))
+                      ? const CircularProgressIndicator(color: Colors.black)
                       : const Text('Save Changes'),
                 ),
               ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: CustomToolbar(
-        context: context,
-        currentIndex: 1,
       ),
     );
   }
@@ -166,8 +173,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       keyboardType: keyboardType,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon),
+        prefixIcon: Icon(icon, color: _greenColor),
         border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: _greenColor, width: 2),
           borderRadius: BorderRadius.circular(10),
         ),
       ),
