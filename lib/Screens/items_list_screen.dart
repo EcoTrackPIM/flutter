@@ -177,55 +177,6 @@ if (mounted) {
   );
 }
 
-  Widget _buildDonutChart() {
-    final total = categorizedItems.values.fold<int>(0, (sum, list) => sum + list.length);
-    if (total == 0) return const SizedBox();
-
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 20),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.green.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "🌿 Category Overview",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2F6650),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Column(
-            children: categorizedItems.entries.map((entry) {
-              final percent = ((entry.value.length / total) * 100).toStringAsFixed(1);
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(entry.key, style: const TextStyle(fontSize: 14, color: Colors.black87)),
-                    Text('$percent%', style: const TextStyle(fontSize: 14, color: Colors.black54)),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
 Widget _buildEmptyState() {
   return Center(
     child: Column(
@@ -260,7 +211,6 @@ Widget build(BuildContext context) {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDonutChart(),
                   const SizedBox(height: 24),
                   ...categorizedItems.entries.map((entry) {
                     final category = entry.key;

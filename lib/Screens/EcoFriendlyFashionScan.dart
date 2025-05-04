@@ -5,7 +5,7 @@ import 'package:http_parser/http_parser.dart';
 import 'CameraOptionsScreen.dart';
 
 const String BEARER_TOKEN = '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';
-const String SERVER_URL = 'http://192.168.1.122:3000/upload';
+const String SERVER_URL = 'http://192.168.1.128:3000/upload';
 
 class EcoFriendlyFashionScanScreen extends StatefulWidget {
   const EcoFriendlyFashionScanScreen({Key? key}) : super(key: key);

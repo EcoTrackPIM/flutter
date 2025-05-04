@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'package:flutter_eco_track/model/product.dart';
+import 'package:flutter_eco_track/models/product.dart';
 import 'package:http/http.dart' as http;
-import '../model/product.dart';
 
 class ProductService {
   static const String backendUrl = 'http://192.168.1.21:3000/products'; // ✅ Vérifie bien que c’est l’IP de ton PC

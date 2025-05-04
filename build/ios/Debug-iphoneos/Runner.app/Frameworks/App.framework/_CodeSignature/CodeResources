@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		4rTDlx7q6iTYWXy4AeXHwhPU/MY=
+		f3QpC2Is2h+gP0GTPyLLFow7e4A=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		+t2HXREKttq03FuSA9t8DqyCI0A=
+		+AiFB0BOPY1ln8LtelutLIC3cYw=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -22,7 +22,7 @@
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		aXAEO2OldqIWQ0tf6aJHblWrndk=
+		BHlUUDsAuFh7wd034PKT6YIblEg=
 		</data>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
 		<data>
@@ -206,7 +206,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		+vKz2pfvBvaFE9cG3I9Zc6SSLew=
+		WuxMtR6eYr3vLJ696wTT6aghbRo=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -304,14 +304,6 @@
 		<data>
 		5wipmf4TiXplfwAu8bBEQkgmmqE=
 		</data>
-		<key>flutter_assets/packages/simple_barcode_scanner/assets/barcode.html</key>
-		<data>
-		DNfI2vRRzvy8fiW0XE6ZTr0pf0Q=
-		</data>
-		<key>flutter_assets/packages/simple_barcode_scanner/assets/html5-qrcode.min.js</key>
-		<data>
-		48AGyg4D4UXFgIJHGrZRQV72RN0=
-		</data>
 		<key>flutter_assets/shaders/ink_sparkle.frag</key>
 		<data>
 		VoVnsu58hN7wrwazX0nyAopiB0Q=
@@ -327,14 +319,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			eQanbfOhnjEVvhUd8x0yBgcLMZXzy3aE7Hp4MWUCUPg=
+			sXhyAQQOzmOi+ZR6bBYrd6DgNTXZE1GI0bKSiyALbtw=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			xVpJGTy7/2ReFPLwzycQdymwwz3zh2LUjadmCokheAQ=
+			1f3Tpgg+XfaA7AqoeYUSdK2GNuqaoJYqKeiFhMiwao0=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -348,7 +340,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			dj2uDG7O4UV2Dunm17mVJ1z5vBbzqWQ28lHEGjK/UYc=
+			akDnxLrdOYJpo+dpO/Aa0hQsQXvARF3gpStOw8Nm0sk=
 			</data>
 		</dict>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
@@ -670,7 +662,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Bbi0J3bG9u6nIMXQMPrfVolcdnte9HLVVdcAYJSZucI=
+			xJgoOPFNtd2BWsVJmJZRUsQl2xx3yNbDS3kK1EhnYWA=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
@@ -839,20 +831,6 @@
 			<key>hash2</key>
 			<data>
 			hkPdAg583tT9IxLhQaZnzx/6lErDQk7E4C4Xc6c35+c=
-			</data>
-		</dict>
-		<key>flutter_assets/packages/simple_barcode_scanner/assets/barcode.html</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			gctfkPyXkYHL6x1oFEo8FZBfN6R1hjTUAiqiMGw/Cx8=
-			</data>
-		</dict>
-		<key>flutter_assets/packages/simple_barcode_scanner/assets/html5-qrcode.min.js</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ZgsSQ3sddH4+aLi+BoXAjLcoFAEQrSE/FnsUtm+LHY4=
 			</data>
 		</dict>
 		<key>flutter_assets/shaders/ink_sparkle.frag</key>

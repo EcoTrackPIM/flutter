@@ -1,10 +1,10 @@
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_eco_track/Screens/food/food_screen.dart';
 import 'package:flutter_eco_track/Screens/items_list_screen.dart';
 import 'package:flutter_eco_track/Screens/rapport.dart';
 import 'package:flutter_eco_track/Screens/realTimeScan.dart';
-import 'package:flutter_eco_track/food/food.dart';
 import 'dart:math';
 import './profile_screen.dart';
 import './SettingsScreen.dart';
@@ -811,65 +811,7 @@ SizedBox(height: 20),
 ),
 ),
 ),
- bottomNavigationBar: Container(
-    margin: const EdgeInsets.all(12),
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(30),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 10,
-          offset: Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        IconButton(
-          icon: Icon(Icons.home_outlined,
-              color: Color(0xFF4D8B6F), size: 28),
-          onPressed: () {}, // Already on Home
-        ),
-        IconButton(
-          icon: Icon(Icons.checkroom_outlined,
-              color: Colors.grey, size: 28),
-          onPressed: () {
-            Navigator.push(context,
-              MaterialPageRoute(builder: (_) => ScanOptionsScreen()));
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.restaurant_menu_outlined,
-              color: Colors.grey, size: 28),
-          onPressed: () {
-            Navigator.push(context,
-              MaterialPageRoute(builder: (_) => FoodScreen()));
-          },
-        ),
-        IconButton(
-          icon: Icon(Icons.alt_route_outlined,
-              color: Colors.grey, size: 28),
-          onPressed: () {
-            Navigator.push(context,
-              MaterialPageRoute(builder: (_) => DailyRapportScreen()));
-          },
-        ),
-IconButton(
-  icon: Icon(Icons.qr_code_scanner_outlined,
-      color: Colors.grey, size: 28),
-  onPressed: () async {
-                          final cameras = await availableCameras();
 
-    Navigator.push(context,
-      MaterialPageRoute(builder: (_) => RealTimeScanScreen(cameras: cameras))); // Replace with your actual screen
-  },
-),
-      ],
-    ),
-  ),
 );
 }
 }

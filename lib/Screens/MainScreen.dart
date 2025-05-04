@@ -1,12 +1,13 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_eco_track/Screens/HomeScreen.dart';
 import 'package:flutter_eco_track/Screens/distance_map.dart';
+import 'package:flutter_eco_track/Screens/food/food_screen.dart';
 import 'package:flutter_eco_track/Screens/profile_screen.dart';
 import 'package:flutter_eco_track/Screens/rapport.dart';
-import 'package:flutter_eco_track/food/food.dart';
+import 'package:flutter_eco_track/Screens/realTimeScan.dart';
 import 'EcoFriendlyFashionScan.dart';
 import 'ScanOptionsScreen.dart';
-import 'HomeScreen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -92,15 +93,15 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.person_outline,
-                  color: _currentIndex == 4 ? activeColor : inactiveColor,
-                  size: 28),
-              onPressed: () {
-                setState(() {
-                  _currentIndex = 4;
-                });
-              },
-            ),
+  icon: Icon(Icons.qr_code_scanner_outlined,
+      color: Colors.grey, size: 28),
+  onPressed: () async {
+                          final cameras = await availableCameras();
+
+    Navigator.push(context,
+      MaterialPageRoute(builder: (_) => RealTimeScanScreen(cameras: cameras))); // Replace with your actual screen
+  },
+),
           ],
         ),
       ),

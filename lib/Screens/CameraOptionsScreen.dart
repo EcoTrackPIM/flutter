@@ -53,7 +53,7 @@ class _CameraOptionsScreenState extends State<CameraOptionsScreen> {
   }
 
   void _configureDio() {
-    _dio.options.baseUrl = 'http://192.168.1.122:3000';
+    _dio.options.baseUrl = 'http://192.168.1.128:3000';
     _dio.options.connectTimeout = const Duration(seconds: 30);
     _dio.options.headers = {
       'Authorization': 'Bearer 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',

@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 
 
 class ApiService {
-  final String baseUrl = "http://192.168.1.122:3000";
+  final String baseUrl = "http://192.168.1.128:3000";
   final FlutterSecureStorage storage = const FlutterSecureStorage();
   String? _extractScanId(Map<String, dynamic> response) {
     return response['id']?.toString() ??

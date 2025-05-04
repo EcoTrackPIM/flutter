@@ -59,7 +59,7 @@ class _OutfitSelectionScreenState extends State<OutfitSelectionScreen> {
             carbonFootprint: footprint,
             fileName: widget.imagePath.split('/').last,
             outfitType: _selectedOutfit!,
-            composition: widget.composition, // Pass the composition through
+            composition: widget.composition, itemName: '', // Pass the composition through
           ),
         ),
       );

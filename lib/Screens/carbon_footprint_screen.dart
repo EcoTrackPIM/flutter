@@ -11,7 +11,7 @@ class CarbonFootprintScreen extends StatelessWidget {
     required this.carbonFootprint,
     required this.fileName,
     required this.outfitType,
-    required this.composition,
+    required this.composition, required String itemName,
   });
 
   String get _mainMaterial {

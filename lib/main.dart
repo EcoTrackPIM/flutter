@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'Screens/HomeScreen.dart';
 import 'Screens/splashScreen.dart';
 import 'dart:io'; // Add this
 import 'package:image_picker/image_picker.dart';
@@ -66,7 +65,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: HomeScreen(),
+      home:  const SplashScreen(),
     );
   }
 }

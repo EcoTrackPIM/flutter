@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_eco_track/food/food.dart';
-import '../Screens/HomeScreen.dart';
+import 'package:flutter_eco_track/Screens/HomeScreen.dart';
+import 'package:flutter_eco_track/Screens/food/food_screen.dart';
 import '../Screens/profile_screen.dart';
 import '../Screens/SettingsScreen.dart';
 import '../Screens/ScanOptionsScreen.dart';

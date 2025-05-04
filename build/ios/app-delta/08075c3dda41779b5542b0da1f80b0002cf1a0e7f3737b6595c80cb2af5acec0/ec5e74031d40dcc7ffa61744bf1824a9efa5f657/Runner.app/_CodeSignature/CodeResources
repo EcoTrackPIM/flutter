@@ -46,7 +46,7 @@
 		</data>
 		<key>Frameworks/App.framework/App</key>
 		<data>
-		+pdFv80gzFQW85NWGm9E7jRWKA4=
+		uOnjuS5rWnBbBUQyWEoheeU765U=
 		</data>
 		<key>Frameworks/App.framework/Info.plist</key>
 		<data>
@@ -54,15 +54,15 @@
 		</data>
 		<key>Frameworks/App.framework/_CodeSignature/CodeResources</key>
 		<data>
-		Qz42uETcgvdnlDM5jZzWIKbOUHw=
+		94KTA7a3ZnhTtYhDlWn1RRciot0=
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/AssetManifest.bin</key>
 		<data>
-		4rTDlx7q6iTYWXy4AeXHwhPU/MY=
+		f3QpC2Is2h+gP0GTPyLLFow7e4A=
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/AssetManifest.json</key>
 		<data>
-		+t2HXREKttq03FuSA9t8DqyCI0A=
+		+AiFB0BOPY1ln8LtelutLIC3cYw=
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/FontManifest.json</key>
 		<data>
@@ -70,7 +70,7 @@
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/NOTICES.Z</key>
 		<data>
-		aXAEO2OldqIWQ0tf6aJHblWrndk=
+		BHlUUDsAuFh7wd034PKT6YIblEg=
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/NativeAssetsManifest.json</key>
 		<data>
@@ -254,7 +254,7 @@
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/kernel_blob.bin</key>
 		<data>
-		+vKz2pfvBvaFE9cG3I9Zc6SSLew=
+		ZK3ZC2OgnrR5TqbTXD94egvZgdk=
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -352,14 +352,6 @@
 		<data>
 		5wipmf4TiXplfwAu8bBEQkgmmqE=
 		</data>
-		<key>Frameworks/App.framework/flutter_assets/packages/simple_barcode_scanner/assets/barcode.html</key>
-		<data>
-		DNfI2vRRzvy8fiW0XE6ZTr0pf0Q=
-		</data>
-		<key>Frameworks/App.framework/flutter_assets/packages/simple_barcode_scanner/assets/html5-qrcode.min.js</key>
-		<data>
-		48AGyg4D4UXFgIJHGrZRQV72RN0=
-		</data>
 		<key>Frameworks/App.framework/flutter_assets/shaders/ink_sparkle.frag</key>
 		<data>
 		VoVnsu58hN7wrwazX0nyAopiB0Q=
@@ -370,7 +362,7 @@
 		</data>
 		<key>Frameworks/DKImagePickerController.framework/DKImagePickerController</key>
 		<data>
-		l20zBQViIpf625zL02fy21N+00Y=
+		I+lNHCHFCzpw+/yQZjOSbcBMlVo=
 		</data>
 		<key>Frameworks/DKImagePickerController.framework/DKImagePickerController.bundle/Assets.car</key>
 		<data>
@@ -574,7 +566,7 @@
 		</data>
 		<key>Frameworks/DKPhotoGallery.framework/DKPhotoGallery</key>
 		<data>
-		Zr0juS0GTMg2IBLtJ2qezN8RcjY=
+		mKngdyDaUip3COlOb6/WRALNcAM=
 		</data>
 		<key>Frameworks/DKPhotoGallery.framework/DKPhotoGallery.bundle/Assets.car</key>
 		<data>
@@ -625,7 +617,7 @@
 		</data>
 		<key>Frameworks/Flutter.framework/Flutter</key>
 		<data>
-		ICA16T5vFop0tbbQqSYJWB7Iz2U=
+		hTXVhBkK4kqa6VrbFE3WnKVLFeI=
 		</data>
 		<key>Frameworks/Flutter.framework/Headers/Flutter.h</key>
 		<data>
@@ -721,7 +713,7 @@
 		</data>
 		<key>Frameworks/Reachability.framework/Reachability</key>
 		<data>
-		uPaqfKELO6w3YYFDU7p/bZl690w=
+		35eb48dg+2ni30XGe1DgokYSX5k=
 		</data>
 		<key>Frameworks/Reachability.framework/ReachabilitySwift.bundle/Info.plist</key>
 		<data>
@@ -741,7 +733,7 @@
 		</data>
 		<key>Frameworks/SDWebImage.framework/SDWebImage</key>
 		<data>
-		PHFdlE7lveJgLjgU4iFvEX/lM1k=
+		Yz6HYeoZiAeUfoXsrbEmxCsfgdM=
 		</data>
 		<key>Frameworks/SDWebImage.framework/SDWebImage.bundle/Info.plist</key>
 		<data>
@@ -761,7 +753,7 @@
 		</data>
 		<key>Frameworks/SwiftyGif.framework/SwiftyGif</key>
 		<data>
-		/7q5N1+8E9OEmwIk+7ogbqBEuRQ=
+		RLDxnh/u5XrzB7zVRTF8BTsxzGE=
 		</data>
 		<key>Frameworks/SwiftyGif.framework/SwiftyGif.bundle/Info.plist</key>
 		<data>
@@ -785,7 +777,7 @@
 		</data>
 		<key>Frameworks/audio_session.framework/audio_session</key>
 		<data>
-		+jmxeNV6Iu9P3xEmnGfWufz0Fdg=
+		Hqjl25TKzHj0cTR2kW5yzD7oZLo=
 		</data>
 		<key>Frameworks/camera_avfoundation.framework/Info.plist</key>
 		<data>
@@ -797,7 +789,7 @@
 		</data>
 		<key>Frameworks/camera_avfoundation.framework/camera_avfoundation</key>
 		<data>
-		fZQOVCw4pMWrxCpJHLFviIOqefA=
+		++L/pdIgjpLgjpyNiRmxFKaKWP8=
 		</data>
 		<key>Frameworks/camera_avfoundation.framework/camera_avfoundation_privacy.bundle/Info.plist</key>
 		<data>
@@ -817,7 +809,7 @@
 		</data>
 		<key>Frameworks/connectivity_plus.framework/connectivity_plus</key>
 		<data>
-		6eCuGl0qE7raSInvSiMi3SeSIAc=
+		DbrlpSn31ncefz7vPpabYEZ6iGs=
 		</data>
 		<key>Frameworks/daily_flutter.framework/Info.plist</key>
 		<data>
@@ -829,7 +821,7 @@
 		</data>
 		<key>Frameworks/daily_flutter.framework/daily_flutter</key>
 		<data>
-		d7E6idRa4kCIdT5aHw1FF38M6EM=
+		HiXiFRW3FPUQ9hIA70y7zNw5EF4=
 		</data>
 		<key>Frameworks/file_picker.framework/Info.plist</key>
 		<data>
@@ -841,7 +833,7 @@
 		</data>
 		<key>Frameworks/file_picker.framework/file_picker</key>
 		<data>
-		2Ew+WAFl2y4DJ232skXH1wFqf7Y=
+		3eV7CpgM5QmRaV7r9tqnNHKn5wE=
 		</data>
 		<key>Frameworks/file_picker.framework/file_picker_ios_privacy.bundle/Info.plist</key>
 		<data>
@@ -861,7 +853,31 @@
 		</data>
 		<key>Frameworks/flutter_background_service_ios.framework/flutter_background_service_ios</key>
 		<data>
-		kE4aFC4wer8fs49PxJRYwH95/tg=
+		UOEFM1vTX1CKSUlCt/fBCIOESD4=
+		</data>
+		<key>Frameworks/flutter_barcode_scanner.framework/Info.plist</key>
+		<data>
+		wkWQQsOguGpaE5Ivv5AAauh4OM0=
+		</data>
+		<key>Frameworks/flutter_barcode_scanner.framework/_CodeSignature/CodeResources</key>
+		<data>
+		bq4aJEYv3vawq08MCuUr4WUcLAo=
+		</data>
+		<key>Frameworks/flutter_barcode_scanner.framework/flutter_barcode_scanner</key>
+		<data>
+		d+dnjjT7H/Ksuvj0dOqBSJ1HiMg=
+		</data>
+		<key>Frameworks/flutter_barcode_scanner.framework/ic_flash_off.png</key>
+		<data>
+		jJoblXBy/R5UMzP4yU+Qht93EBc=
+		</data>
+		<key>Frameworks/flutter_barcode_scanner.framework/ic_flash_on.png</key>
+		<data>
+		tVNls5iesb9iaCBcEpK5V+Hl/Ws=
+		</data>
+		<key>Frameworks/flutter_barcode_scanner.framework/ic_switch_camera.png</key>
+		<data>
+		gtHii5KzG/DlLjplzRap3o1dBgU=
 		</data>
 		<key>Frameworks/flutter_local_notifications.framework/Info.plist</key>
 		<data>
@@ -873,7 +889,7 @@
 		</data>
 		<key>Frameworks/flutter_local_notifications.framework/flutter_local_notifications</key>
 		<data>
-		84ZJoNsIRNIYAmq+LBlCoU9fmKc=
+		dDdyrJGj1PXUXhfze20IkOrdzvY=
 		</data>
 		<key>Frameworks/flutter_local_notifications.framework/flutter_local_notifications_privacy.bundle/Info.plist</key>
 		<data>
@@ -893,7 +909,7 @@
 		</data>
 		<key>Frameworks/flutter_secure_storage.framework/flutter_secure_storage</key>
 		<data>
-		1KiaTjixsOCsofReM8ZTc5sNWew=
+		alPO5aceRjjyvMyiiHdjEFqPAb8=
 		</data>
 		<key>Frameworks/flutter_secure_storage.framework/flutter_secure_storage.bundle/Info.plist</key>
 		<data>
@@ -913,7 +929,7 @@
 		</data>
 		<key>Frameworks/geolocator_apple.framework/geolocator_apple</key>
 		<data>
-		m225fM1fH71QJCPUj0GrrC4LCxs=
+		yj7/nWxtEgCB2ceC1qhkkY8ApOs=
 		</data>
 		<key>Frameworks/geolocator_apple.framework/geolocator_apple_privacy.bundle/Info.plist</key>
 		<data>
@@ -933,7 +949,7 @@
 		</data>
 		<key>Frameworks/image_picker_ios.framework/image_picker_ios</key>
 		<data>
-		bTMhDTsHmdZMyxh/LyZGoscAO9k=
+		aulIuHUdHXzDBZS3LsmEw9zBmb8=
 		</data>
 		<key>Frameworks/image_picker_ios.framework/image_picker_ios_privacy.bundle/Info.plist</key>
 		<data>
@@ -953,7 +969,7 @@
 		</data>
 		<key>Frameworks/just_audio.framework/just_audio</key>
 		<data>
-		gwlthsAzUYPtuZte62tEmW3r4DE=
+		5YP/FPIWuWUtA1uDLOJtV7jnJJg=
 		</data>
 		<key>Frameworks/open_file_ios.framework/Info.plist</key>
 		<data>
@@ -965,7 +981,7 @@
 		</data>
 		<key>Frameworks/open_file_ios.framework/open_file_ios</key>
 		<data>
-		emZSVBxT/UGbEmzc1tnlk2BmqGI=
+		/2poY/nu9t7zVQIfak7XnAMHCDw=
 		</data>
 		<key>Frameworks/path_provider_foundation.framework/Info.plist</key>
 		<data>
@@ -977,7 +993,7 @@
 		</data>
 		<key>Frameworks/path_provider_foundation.framework/path_provider_foundation</key>
 		<data>
-		BXg1hpqgPEvONnHk6MUvM1ZgqKo=
+		EPI1iYq2Yi5OH1hH31AYWc7694o=
 		</data>
 		<key>Frameworks/path_provider_foundation.framework/path_provider_foundation_privacy.bundle/Info.plist</key>
 		<data>
@@ -997,7 +1013,7 @@
 		</data>
 		<key>Frameworks/record_ios.framework/record_ios</key>
 		<data>
-		UXthtskSutCmqiGLuR6z2DX4Zp8=
+		U11eC3/kuQr3JLrnvH29TBfJIDs=
 		</data>
 		<key>Frameworks/record_ios.framework/record_ios_privacy.bundle/Info.plist</key>
 		<data>
@@ -1017,7 +1033,7 @@
 		</data>
 		<key>Frameworks/shared_preferences_foundation.framework/shared_preferences_foundation</key>
 		<data>
-		rDLF+I21ylobm4u8MwThuYsL81s=
+		p/l/2C1FmkjuR5Sp4uqkpjUHHfY=
 		</data>
 		<key>Frameworks/shared_preferences_foundation.framework/shared_preferences_foundation_privacy.bundle/Info.plist</key>
 		<data>
@@ -1026,30 +1042,6 @@
 		<key>Frameworks/shared_preferences_foundation.framework/shared_preferences_foundation_privacy.bundle/PrivacyInfo.xcprivacy</key>
 		<data>
 		6uLTlq7fgHHWA8emYDf4ImHC+AY=
-		</data>
-		<key>Frameworks/simple_barcode_scanner.framework/Info.plist</key>
-		<data>
-		oFsiO69NN3aE1kFzCi2IuvpeuJk=
-		</data>
-		<key>Frameworks/simple_barcode_scanner.framework/_CodeSignature/CodeResources</key>
-		<data>
-		cIwxBPia0LwMZOBpEf6WFDDNE5g=
-		</data>
-		<key>Frameworks/simple_barcode_scanner.framework/ic_flash_off.png</key>
-		<data>
-		jJoblXBy/R5UMzP4yU+Qht93EBc=
-		</data>
-		<key>Frameworks/simple_barcode_scanner.framework/ic_flash_on.png</key>
-		<data>
-		tVNls5iesb9iaCBcEpK5V+Hl/Ws=
-		</data>
-		<key>Frameworks/simple_barcode_scanner.framework/ic_switch_camera.png</key>
-		<data>
-		gtHii5KzG/DlLjplzRap3o1dBgU=
-		</data>
-		<key>Frameworks/simple_barcode_scanner.framework/simple_barcode_scanner</key>
-		<data>
-		nKwO7LgqoQjaiLVoNd4V1NaoBy0=
 		</data>
 		<key>Frameworks/sqflite_darwin.framework/Info.plist</key>
 		<data>
@@ -1061,7 +1053,7 @@
 		</data>
 		<key>Frameworks/sqflite_darwin.framework/sqflite_darwin</key>
 		<data>
-		HgZiFbv5VLmaHVCQcC40ZYtkVG0=
+		QivXJ/3FyGY0xuT403JpXQ3exQE=
 		</data>
 		<key>Frameworks/sqflite_darwin.framework/sqflite_darwin_privacy.bundle/Info.plist</key>
 		<data>
@@ -1081,7 +1073,7 @@
 		</data>
 		<key>Frameworks/url_launcher_ios.framework/url_launcher_ios</key>
 		<data>
-		CimvegwGWjPcd2y/Ei/4SbWZx/s=
+		jirgIzC1mV8wwwBUvh8pQp+Ybfo=
 		</data>
 		<key>Frameworks/url_launcher_ios.framework/url_launcher_ios_privacy.bundle/Info.plist</key>
 		<data>
@@ -1921,11 +1913,11 @@
 		</data>
 		<key>Runner.debug.dylib</key>
 		<data>
-		3CqTXMbQ/YM58Pyum9YBDn6M23A=
+		fgcgxD7e7vjtbpJD8new5sIxw+U=
 		</data>
 		<key>__preview.dylib</key>
 		<data>
-		T3ennGPPdOviS987Lz/6ailgtsg=
+		cOm1hnSSBiJqy/sYdDq/F24q2AQ=
 		</data>
 		<key>embedded.mobileprovision</key>
 		<data>
@@ -2024,7 +2016,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			CQCn2bQtE3KCBAm+XxT1i8KE7h4zAzFb16bkaaUfajc=
+			E6/4nW5UCKgRk/QySSFq6s1hx7dr2PV9BsqQHKYI08I=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/Info.plist</key>
@@ -2038,21 +2030,21 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			WZlfhcVOSnNEFI3FVuZu2z83Az4cisjV9byk6hDQ5KM=
+			/XnK7RPCD/qc2Rb54QykIbFQRX1Pj9S6R62u2vIEs4w=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/AssetManifest.bin</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			eQanbfOhnjEVvhUd8x0yBgcLMZXzy3aE7Hp4MWUCUPg=
+			sXhyAQQOzmOi+ZR6bBYrd6DgNTXZE1GI0bKSiyALbtw=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			xVpJGTy7/2ReFPLwzycQdymwwz3zh2LUjadmCokheAQ=
+			1f3Tpgg+XfaA7AqoeYUSdK2GNuqaoJYqKeiFhMiwao0=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/FontManifest.json</key>
@@ -2066,7 +2058,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			dj2uDG7O4UV2Dunm17mVJ1z5vBbzqWQ28lHEGjK/UYc=
+			akDnxLrdOYJpo+dpO/Aa0hQsQXvARF3gpStOw8Nm0sk=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/NativeAssetsManifest.json</key>
@@ -2388,7 +2380,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Bbi0J3bG9u6nIMXQMPrfVolcdnte9HLVVdcAYJSZucI=
+			GUozKRJzNSInDQ8+2qiS88JpXvirPv8T2rLx29mqzkU=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
@@ -2559,20 +2551,6 @@
 			hkPdAg583tT9IxLhQaZnzx/6lErDQk7E4C4Xc6c35+c=
 			</data>
 		</dict>
-		<key>Frameworks/App.framework/flutter_assets/packages/simple_barcode_scanner/assets/barcode.html</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			gctfkPyXkYHL6x1oFEo8FZBfN6R1hjTUAiqiMGw/Cx8=
-			</data>
-		</dict>
-		<key>Frameworks/App.framework/flutter_assets/packages/simple_barcode_scanner/assets/html5-qrcode.min.js</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ZgsSQ3sddH4+aLi+BoXAjLcoFAEQrSE/FnsUtm+LHY4=
-			</data>
-		</dict>
 		<key>Frameworks/App.framework/flutter_assets/shaders/ink_sparkle.frag</key>
 		<dict>
 			<key>hash2</key>
@@ -2591,7 +2569,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			DOgkOjfG5y0MEyR2azF+KwKre0ZQB2otD0h20lZcuvU=
+			2F6nOAA9w18aA3eyudaDjCUNwdl2TNvCm1whDWBN/gs=
 			</data>
 		</dict>
 		<key>Frameworks/DKImagePickerController.framework/DKImagePickerController.bundle/Assets.car</key>
@@ -2813,7 +2791,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			p23aagic3qtFva1uGPhwxwVnaVIUTRmguI4I9mE4qX0=
+			mRox9KSFxRqJegzrZ5USUzsnMr02kp2T+2lycbrCi2g=
 			</data>
 		</dict>
 		<key>Frameworks/DKPhotoGallery.framework/DKPhotoGallery.bundle/Assets.car</key>
@@ -2882,7 +2860,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			JlgKZ+zajS3MzIhrL/dlvTLNrk6fg8iJyTiVsLK7iLI=
+			zPNtu0POXrt84NcBllYzvazFBQu62lfepsvc24LY7C4=
 			</data>
 		</dict>
 		<key>Frameworks/Flutter.framework/Headers/Flutter.h</key>
@@ -3050,7 +3028,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			5c/Wda9ki9FBCQwRnKDkUzqNwhxqwYe4vvI6xWC1Pl8=
+			YupahRa2YJdRaf/TdPbvxiopz1Wa5O9lXylbUbJy31A=
 			</data>
 		</dict>
 		<key>Frameworks/Reachability.framework/ReachabilitySwift.bundle/Info.plist</key>
@@ -3085,7 +3063,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			pfvDUGF1ZpbD3xjeq0XlPsZuf+rl0BCTnAN+vv4RebQ=
+			OGGjBrB4jv6cbxrl6vMxUgiYxLgqwgz07fh9KaJT0ag=
 			</data>
 		</dict>
 		<key>Frameworks/SDWebImage.framework/SDWebImage.bundle/Info.plist</key>
@@ -3120,7 +3098,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			4H0CTbbj7ivcy4uoIDdRSaoPsaXZ6x6uwtnhzz3IL/E=
+			6C2Pb5Cxtt12gLDwCz4dwdiFB8tnLt0C2p7Eb3gwjW8=
 			</data>
 		</dict>
 		<key>Frameworks/SwiftyGif.framework/SwiftyGif.bundle/Info.plist</key>
@@ -3162,7 +3140,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ABIryr+tDuP8uYIVO7cVDgb/5U8RrMnX/r3nKAnU+vE=
+			KM4fDRhF6AK/3XaPXqtXwbYW15El6I+ydm17cEE8/s4=
 			</data>
 		</dict>
 		<key>Frameworks/camera_avfoundation.framework/Info.plist</key>
@@ -3183,7 +3161,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			SeYsj2QlCOcRdjsO9dqZbx/n0tr1eVNk912cI3Ak7AA=
+			Krbgux+SLH72cLgBe+9yoZGBQJ0nGAOIvd3G1hR9jZ4=
 			</data>
 		</dict>
 		<key>Frameworks/camera_avfoundation.framework/camera_avfoundation_privacy.bundle/Info.plist</key>
@@ -3218,7 +3196,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			7ShZv+QG/a81qq6zH2LwDzjLYlM8WHYVcUMIrxK6rlc=
+			4ZaWD/s39u8e3kXCzWSjX9qvfc3BWJifV34gydna3PU=
 			</data>
 		</dict>
 		<key>Frameworks/daily_flutter.framework/Info.plist</key>
@@ -3239,7 +3217,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			5ygywqj29sWJZWvT8eUlASy/6XWnjdVTT0wvlnI3Bh8=
+			ZXOW94C57YljRgLhWbYpWO1XYTUmv73lZfoHrQxTN7I=
 			</data>
 		</dict>
 		<key>Frameworks/file_picker.framework/Info.plist</key>
@@ -3260,7 +3238,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			sRf0IAOcf/W3jKViOmAqsP5M5hd+Y8nL7GQvx6rkVoM=
+			nnf5nVYGC8cEMgwwnovQmCJlvy0Ih8VirplMGmYK0zs=
 			</data>
 		</dict>
 		<key>Frameworks/file_picker.framework/file_picker_ios_privacy.bundle/Info.plist</key>
@@ -3295,7 +3273,49 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			sFToFr9TBaXg8CVRuuHvCHLA1eMYKpr9NHXsJ54rNAA=
+			I+lnicT9XyL8TkG/kFnubvn3pKUMsaXwyPWDG2vdmH8=
+			</data>
+		</dict>
+		<key>Frameworks/flutter_barcode_scanner.framework/Info.plist</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			8IrysN1hsMrQEXTBW+R1+/7PYIQuW0Is/BoCV7vDmbg=
+			</data>
+		</dict>
+		<key>Frameworks/flutter_barcode_scanner.framework/_CodeSignature/CodeResources</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			oEEg8CD7ELVdDhxZzzIjK7X0FMCBhiqEWFfBPUVi9Ow=
+			</data>
+		</dict>
+		<key>Frameworks/flutter_barcode_scanner.framework/flutter_barcode_scanner</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			FMOSBhKVsVcZGqwioUkaWN9hLUBpV6WybgCJLGK0Gno=
+			</data>
+		</dict>
+		<key>Frameworks/flutter_barcode_scanner.framework/ic_flash_off.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			QstN7g5Qv6sB5JBtYrh2iF8L+Ml7augSSkRSsdGge5o=
+			</data>
+		</dict>
+		<key>Frameworks/flutter_barcode_scanner.framework/ic_flash_on.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			jj9woW2MOWFTziBpdeRKnv8Wv4jLD9LTDl74BMExaWI=
+			</data>
+		</dict>
+		<key>Frameworks/flutter_barcode_scanner.framework/ic_switch_camera.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			CiZyEnZwvp4i6TPluzx+L7OJBKiMBE3uF72UK1divQ8=
 			</data>
 		</dict>
 		<key>Frameworks/flutter_local_notifications.framework/Info.plist</key>
@@ -3316,7 +3336,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			P0WFTEhXaMeluuAkD4tCwEBDb5pm5pf0KrLPMm2s6sg=
+			rY8BRWY3pydYdv5jayTEx499szj4/HcqlS5AM68bvRo=
 			</data>
 		</dict>
 		<key>Frameworks/flutter_local_notifications.framework/flutter_local_notifications_privacy.bundle/Info.plist</key>
@@ -3351,7 +3371,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			IWPQgKNv/RrRPmJpcWDwpmY+gwBUDGER54bgmOBtcfU=
+			PObMj8VfXPbDxOQvdioHR7toZD1xqMb48oyI4Wx2uS4=
 			</data>
 		</dict>
 		<key>Frameworks/flutter_secure_storage.framework/flutter_secure_storage.bundle/Info.plist</key>
@@ -3386,7 +3406,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			b/ibheU/6xgfX6ciHXaEtHk1C7e53MYZqvR+w007WD4=
+			AtLIdq2rcf1W6/0thHc60/hNF8tVM+cGPEcGhbc5MyM=
 			</data>
 		</dict>
 		<key>Frameworks/geolocator_apple.framework/geolocator_apple_privacy.bundle/Info.plist</key>
@@ -3421,7 +3441,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Am+MWwQnM6DWPh7BWykPHLdB17F/NqDNs4lae5XCBmM=
+			qpEdUF7YsfUMIYnI5ue+oMz4jg3UhsJVfpyh7CEm0ZE=
 			</data>
 		</dict>
 		<key>Frameworks/image_picker_ios.framework/image_picker_ios_privacy.bundle/Info.plist</key>
@@ -3456,7 +3476,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ikKoKkiTRxnMLNOXTMCxGrCcRpx6LykUHVULwttXXD0=
+			N9zgwLEZ76sbphrH+Eq2QDVKehfn4gJU7loPX3Lc6PY=
 			</data>
 		</dict>
 		<key>Frameworks/open_file_ios.framework/Info.plist</key>
@@ -3477,7 +3497,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			qqxqTpALI2UlYVfkYtIj2xQu97LGhY4BPLCb5RKvJyM=
+			a8AoMordQHO9mn4mHd+gFVhJaPRjLdn6/gkAabAlpf0=
 			</data>
 		</dict>
 		<key>Frameworks/path_provider_foundation.framework/Info.plist</key>
@@ -3498,7 +3518,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			UvpTmGSobJz/RbYrfqzxjlIGzjGlG7n6MUcbV//+hHc=
+			QtvGIcoS8291secD+XV8BaazGyJ8lnWG/P3OsmdK2F4=
 			</data>
 		</dict>
 		<key>Frameworks/path_provider_foundation.framework/path_provider_foundation_privacy.bundle/Info.plist</key>
@@ -3533,7 +3553,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			VkDxZW7jRsc5J/HLnT3KOSP5Ivs/f7xrR0uWQ2D9zO8=
+			Qf468bBlzGsf69ch7EReduImJepjRP1e1gixn3crrSI=
 			</data>
 		</dict>
 		<key>Frameworks/record_ios.framework/record_ios_privacy.bundle/Info.plist</key>
@@ -3568,7 +3588,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			2ZcupbXkaq8q2RxAuWXV2Txm1U2OTL9TVq5PZuioStI=
+			Ruc4ymAzlZrML5b2xjsR0gAeeoTQCM0KhHNjO4UF2Uk=
 			</data>
 		</dict>
 		<key>Frameworks/shared_preferences_foundation.framework/shared_preferences_foundation_privacy.bundle/Info.plist</key>
@@ -3583,48 +3603,6 @@
 			<key>hash2</key>
 			<data>
 			BWQouTi9VwGKYAGdFcPB7i+nJ/I2h1mLu9k0hIsYCxo=
-			</data>
-		</dict>
-		<key>Frameworks/simple_barcode_scanner.framework/Info.plist</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			SdvyYF0v63UzbeoA7mq66IDZHrK/3Ohkyf2tkBpvhTE=
-			</data>
-		</dict>
-		<key>Frameworks/simple_barcode_scanner.framework/_CodeSignature/CodeResources</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			jX//LQnI+ubl3+jWzg/1v1PWSnvooSFlugVeSYHXIQE=
-			</data>
-		</dict>
-		<key>Frameworks/simple_barcode_scanner.framework/ic_flash_off.png</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			QstN7g5Qv6sB5JBtYrh2iF8L+Ml7augSSkRSsdGge5o=
-			</data>
-		</dict>
-		<key>Frameworks/simple_barcode_scanner.framework/ic_flash_on.png</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			jj9woW2MOWFTziBpdeRKnv8Wv4jLD9LTDl74BMExaWI=
-			</data>
-		</dict>
-		<key>Frameworks/simple_barcode_scanner.framework/ic_switch_camera.png</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			CiZyEnZwvp4i6TPluzx+L7OJBKiMBE3uF72UK1divQ8=
-			</data>
-		</dict>
-		<key>Frameworks/simple_barcode_scanner.framework/simple_barcode_scanner</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			JOCakZ8tj+YHy/tX2WcZkL9d8kNoEwkgcl1uh2fEcKg=
 			</data>
 		</dict>
 		<key>Frameworks/sqflite_darwin.framework/Info.plist</key>
@@ -3645,7 +3623,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			xCpfEO5a8USRepNGd8D2q1qc6fSXa/5KNxkFg8l3dT4=
+			D1xBhzbg+zg/Cz1jdyTSga8gyyIB/L1eQWg2KM7Xm+Y=
 			</data>
 		</dict>
 		<key>Frameworks/sqflite_darwin.framework/sqflite_darwin_privacy.bundle/Info.plist</key>
@@ -3680,7 +3658,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			1IjSn972QZwtnjh78lywNfsDI0VEumPlPTMTZ/4YdNM=
+			P3gpTxK4hkNdp/m23K0mzO7x311n2pXZMBhrds5YBbk=
 			</data>
 		</dict>
 		<key>Frameworks/url_launcher_ios.framework/url_launcher_ios_privacy.bundle/Info.plist</key>
@@ -4785,14 +4763,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			zSAzUXZXfV2CtTq1BlfnLsmck85yWigay7n3wKyzILY=
+			NiI1j/D3dlcwpAmg1AtKvcO4XNs8cI809khjSgAhokI=
 			</data>
 		</dict>
 		<key>__preview.dylib</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			kWm8Y10Cb21p5PxHsosf0Ho1UqV09fZkirG91o1NbI0=
+			QJi965pOuZEVrTvnEemTpjuKGcUafR2t1auXiZiLN1c=
 			</data>
 		</dict>
 		<key>embedded.mobileprovision</key>

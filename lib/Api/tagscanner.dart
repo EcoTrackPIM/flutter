@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 class TagApi {
-  static const String _baseUrl = 'http://192.168.1.122:3000';
+  static const String _baseUrl = 'http://192.168.1.128:3000';
   static const Duration _timeoutDuration = Duration(seconds: 15);
 
   // OCR Scanning Endpoint
